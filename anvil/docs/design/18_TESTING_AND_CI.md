@@ -59,9 +59,9 @@ Important script boundary:
   the T-M11-006/007 ARPG loader/scaffold case, and the T-M10-011 authoring
   compile-gate cases (validate/test/dev fail on compile diagnostics; v1
   projects skip the compiler). Zero deliberately failing tests remain.
-- `pnpm test` also runs the generic verification paths' compile gate
-  indirectly: `validate:examples`/`test:examples`/`validate:gravewake` in the
-  aggregate now compile every schema-v2 project through `@anvil/authoring`.
+- `pnpm check` (the aggregate gate) also exercises the compile gate
+  indirectly: `validate:examples`/`test:examples`/`validate:gravewake` now
+  compile every schema-v2 project through `@anvil/authoring`.
 - `pnpm check` is the aggregate gate and passes end to end: the former
   `validate:gravewake` stop (`games/gravewake/content/items/tyrant_edge.json`
   declared `stats.critMult: 0.35` against the schema's `critMult >= 1`
