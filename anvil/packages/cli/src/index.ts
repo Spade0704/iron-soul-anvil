@@ -286,6 +286,18 @@ async function cmdNew(args: string[]): Promise<void> {
       text = text.replace(/^id:.*$/m, `id: ${id}`);
       text = text.replace(/^title:.*$/m, `title: ${name}`);
       fs.writeFileSync(gy, text);
+      // Templates are schema v2 (T-M10-010); personalize the copied intent
+      // summary with the same boilerplate migrateProject emits.
+      const spec = path.join(base, "game.spec.yaml");
+      if (fs.existsSync(spec)) {
+        const intentText = fs
+          .readFileSync(spec, "utf8")
+          .replace(
+            /^summary:.*$/m,
+            `summary: ${name} is an Anvil game. Replace this migration summary with the intended player experience.`,
+          );
+        fs.writeFileSync(spec, intentText);
+      }
       console.log(base);
       return;
     }
@@ -323,6 +335,14 @@ schemaVersion: 1
       2,
     ),
   );
+  // T-M10-009: commit the fresh project as schema v2 by dogfooding the
+  // shipped migration — one source of truth for the baseline intent contract
+  // (game.spec.yaml) instead of a second scaffold-side copy.
+  const migration = migrateProject(base, { write: true });
+  if (!migration.ok) {
+    console.error(JSON.stringify({ ok: false, errors: migration.errors }, null, 2));
+    process.exit(1);
+  }
   console.log(base);
 }
 

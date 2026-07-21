@@ -1,8 +1,12 @@
 id: shmup-starter
 title: Hello Shmup
+version: 0.0.0
 genre: shmup
 modules:
   - genre-shmup
 entryScene: main
 seed: 1
-schemaVersion: 1
+contentRoot: content
+assetsRoot: assets
+schemaVersion: 2
+intent: game.spec.yaml

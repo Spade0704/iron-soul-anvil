@@ -16,7 +16,7 @@ command.
 | Command | Main arguments | Purpose |
 |---------|----------------|---------|
 | `version` | — | Print runtime version |
-| `new <name>` | `--genre`, `--root` | Scaffold a schema-v1 project |
+| `new <name>` | `--genre`, `--root` | Scaffold a schema-v2 project with its `game.spec.yaml` intent contract |
 | `validate [path]` | `--json` | Validate manifest/content/assets using the core validator |
 | `test [path]` | `--json`, `--seed`, `--strict-assets` | Run scenario tests headlessly |
 | `observe` | `--root`, `--json`, `--shot` | Emit structured state and optional PNG |
@@ -46,18 +46,25 @@ should be preferred by agents.
 none card topdown2d vn shmup fps2
 ```
 
-It emits `schemaVersion: 1` and copies the matching v1 template. `arpg` is
-recognized by the schema package but not by the CLI scaffold command.
+It emits `schemaVersion: 2` with a `game.spec.yaml` intent contract
+(T-M10-009). Template genres copy the matching schema-v2 starter and
+personalize the manifest id/title plus the intent summary; the `none` scaffold
+writes the base project and commits it through the shipped `migrateProject`
+path, so a fresh scaffold and a fresh migration carry the identical baseline
+intent (three requirements: `lifecycle.start`, `input.responds`,
+`lifecycle.restart`). `arpg` is recognized by the schema package but not by
+the CLI scaffold command.
 
 ## 4. Planned, not implemented
 
 | Planned command/change | Intended behavior | Tracking |
 |------------------------|-------------------|----------|
-| schema-v2 default scaffolds | Create intent contract with every project | M10 |
 | `new --genre arpg` | Create a generic declarative ARPG starter | M11 |
 | generic `genre-arpg` loader | Import `@anvil/genre-arpg` for a manifest module id | M11 |
 
-`migrate`, `describe`, and `capabilities` landed with T-M10-008 (thin
+Schema-v2 default scaffolds landed with T-M10-009: every `anvil new` project
+is created with the intent contract. `migrate`, `describe`, and
+`capabilities` landed with T-M10-008 (thin
 projections over `migrateProject` and `compileProject` from
 `@anvil/authoring`). `describe` and `capabilities` require a schema-v2
 project; on a v1 project they exit 1 with the structured `MIGRATION_REQUIRED`
@@ -73,7 +80,7 @@ diagnostic pointing at `anvil migrate`.
 ## 6. Verification
 
 CLI behavior is covered by `packages/cli/src/*.test.ts`. The current checkout
-has two deliberately visible integration failures for the pending M10/M11
-surfaces: schema-v2 scaffold output (T-M10-009) and ARPG scaffold support
-(T-M11-007). The migration/description/capabilities surface (T-M10-008) is
+has one deliberately visible integration failure for the pending M11 surface:
+ARPG scaffold support (T-M11-007). The migration/description/capabilities
+surface (T-M10-008) and the schema-v2 scaffold output (T-M10-009) are
 implemented and covered.

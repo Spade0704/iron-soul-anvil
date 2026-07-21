@@ -14,9 +14,9 @@
 | Capability catalog/project selection APIs | Implemented |
 | `@anvil/authoring/vite` virtual IR bridge | Implemented |
 | `anvil migrate`, `describe`, `capabilities` | Implemented (T-M10-008) |
-| Schema-v2 `anvil new` output | **Not implemented** |
+| Schema-v2 `anvil new` output | Implemented (T-M10-009) |
 | Compiler integration in core `validate`/`test`/`dev` | **Not implemented** |
-| All examples/templates migrated to v2 | **Not implemented** |
+| All examples/templates migrated to v2 | Implemented (T-M10-010) |
 
 This status table controls usage. Later sections describe the full contract;
 they do not make pending CLI surfaces available.
@@ -223,10 +223,10 @@ equivalent.
 | Preview is read-only; write migration is idempotent | Pass |
 | Compiler determinism, immutability, merge, cycle/conflict, and rule reference tests | Pass |
 | Vite virtual IR bridge tests | Pass |
-| All active examples/templates are v2 | Pending |
+| All active examples/templates are v2 | Pass |
 | CLI migrate/describe/capabilities | Pass |
-| Schema-v2 `anvil new` | Pending |
+| Schema-v2 `anvil new` | Pass |
 | Authoring compiler used by generic validate/test/dev | Pending |
-| Full repository gate green | Pending; two CLI integration tests fail |
+| Full repository gate green | Pending; one CLI integration test fails (ARPG scaffold, T-M11-007) |
 
 Tasks: [`../20_FULL_TASK_BREAKDOWN.md`](../20_FULL_TASK_BREAKDOWN.md#M10--schema-v2-agent-native-authoring).

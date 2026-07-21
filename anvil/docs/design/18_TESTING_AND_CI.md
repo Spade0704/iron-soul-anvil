@@ -54,9 +54,10 @@ Important script boundary:
 
 - `pnpm test` explicitly filters the established packages and currently omits
   `@anvil/authoring` and `@anvil/genre-arpg`.
-- It still includes `@anvil/cli`, whose M10/M11 integration tests currently
-  fail two cases (schema-v2 scaffold and ARPG scaffold; the T-M10-008
-  migrate/describe/capabilities cases pass).
+- It still includes `@anvil/cli`, whose M11 integration tests currently fail
+  one case (ARPG scaffold, T-M11-007; the T-M10-008
+  migrate/describe/capabilities cases and the T-M10-009 schema-v2 scaffold
+  case pass).
 - Running the two new package tests directly currently passes 13 tests.
 - `pnpm check` is the intended aggregate gate and currently fails at the CLI
   integration step. It must remain visible until the missing work lands.
@@ -84,7 +85,8 @@ Known CI coverage gaps:
   a game-only change does not run CI;
 - the workflow inherits the root test omission of authoring/ARPG package tests;
 - it does not run Gravewake lint or the browser production build; and
-- with the current CLI integration failures, `build-test` is not green.
+- with the remaining CLI integration failure (T-M11-007), `build-test` is not
+  green.
 
 ## Failure investigation order
 

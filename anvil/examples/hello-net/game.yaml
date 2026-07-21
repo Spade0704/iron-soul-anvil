@@ -1,8 +1,12 @@
 id: hello-net
 title: Hello Net Spike
+version: 0.0.0
 genre: none
 modules:
   - genre-net
 entryScene: main
 seed: 1
-schemaVersion: 1
+contentRoot: content
+assetsRoot: assets
+schemaVersion: 2
+intent: game.spec.yaml

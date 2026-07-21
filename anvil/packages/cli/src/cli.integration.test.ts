@@ -48,10 +48,18 @@ describe("Anvil v2 CLI", () => {
 
     expect(JSON.parse(run(["validate", root, "--json"]))).toMatchObject({ ok: true });
     const description = JSON.parse(run(["describe", root, "--json"]));
+    // Reconciliation (T-M10-009): the spec fixes no scaffold requirement
+    // count (S-SCHEMA §3 "at least one"; S-AUTHORING §4 shows an example).
+    // The repo-wide baseline intent is the migrateProject default of THREE
+    // requirements (lifecycle.start, input.responds, lifecycle.restart) —
+    // see migrate.ts, every example/template game.spec.yaml, and the
+    // "describes a migrated v2 project" case below asserting requirements: 3.
+    // A fresh scaffold must describe identically to a fresh migration, so
+    // the earlier placeholder value of 2 here was the wrong side.
     expect(description).toMatchObject({
       ok: true,
       manifest: { id: "cli-test", schemaVersion: 2 },
-      counts: { requirements: 2 },
+      counts: { requirements: 3 },
     });
     expect(description.sourceHash).toMatch(/^[0-9a-f]{64}$/);
 

@@ -1,8 +1,12 @@
 id: hello-card
 title: Hello Card
+version: 0.0.0
 genre: card
 modules:
   - genre-card
 entryScene: battle
 seed: 1
-schemaVersion: 1
+contentRoot: content
+assetsRoot: assets
+schemaVersion: 2
+intent: game.spec.yaml

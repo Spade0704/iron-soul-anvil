@@ -1,6 +1,6 @@
 # 11 — Recipes and templates
 
-Templates are complete schema-v1 starter packages used by `anvil new`.
+Templates are complete schema-v2 starter packages used by `anvil new`.
 Recipes are small declarative file patches an agent can inspect and apply
 manually.
 
@@ -8,15 +8,17 @@ manually.
 
 | Template | Genre | Current project schema |
 |----------|-------|------------------------|
-| `card-starter` | card | v1 |
-| `topdown-starter` | topdown2d | v1 |
-| `vn-starter` | vn | v1 |
-| `shmup-starter` | shmup | v1 |
-| `fps2-starter` | fps2 | v1 |
+| `card-starter` | card | v2 |
+| `topdown-starter` | topdown2d | v2 |
+| `vn-starter` | vn | v2 |
+| `shmup-starter` | shmup | v2 |
+| `fps2-starter` | fps2 | v2 |
 
-The `none` scaffold is derived from the empty example. There is no ARPG starter
-yet. Every example/template now contains a `game.spec.yaml` file, but its
-manifest remains schema v1 and the generic CLI does not compile that intent.
+The `none` scaffold writes a base project and commits it through the shipped
+migration, so it is also schema v2 with the baseline intent contract. There is
+no ARPG starter yet. Every example/template manifest is schema v2 with a
+`game.spec.yaml` intent file (T-M10-010); the generic `validate`/`test`/`dev`
+paths do not yet compile that intent (T-M10-011).
 
 ## Current recipe storage and shape
 
@@ -70,5 +72,5 @@ After manually applying a recipe:
 4. run the recipe's or title's scenario tests; and
 5. inspect state/visual output if behavior is not obvious.
 
-Schema-v2 template migration, automatic intent compilation, and an ARPG
-starter are pending M10/M11 tasks.
+Schema-v2 template migration landed (T-M10-010). Automatic intent compilation
+(T-M10-011) and an ARPG starter (T-M11-007) are pending M10/M11 tasks.
