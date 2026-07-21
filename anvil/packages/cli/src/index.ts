@@ -2,10 +2,12 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import yaml from "yaml";
 import {
   compileProject,
   migrateProject,
 } from "@anvil/authoring";
+import type { AnvilError, ValidationResult } from "@anvil/schema";
 import {
   AGENT_TOOL_CATALOG,
   ANVIL_VERSION,
@@ -358,17 +360,64 @@ function copyDir(src: string, dest: string): void {
   }
 }
 
+/**
+ * Authoring compile gate for the generic verification paths (T-M10-011).
+ *
+ * Schema-v2 projects must compile through `@anvil/authoring` before
+ * `validate`/`test`/`dev` treat them as healthy — this is what verifies the
+ * intent contract, declarative rules, and prefab graph generically. Schema-v1
+ * projects skip the compiler per the S-AUTHORING §2 version boundary (v1
+ * still validates and launches through core until the full cutover).
+ * Unreadable/missing manifests also skip: the core validator owns those
+ * diagnostics.
+ */
+function authoringCompileGate(root: string): {
+  errors: AnvilError[];
+  warnings: AnvilError[];
+} {
+  let version: unknown;
+  try {
+    const raw: unknown = yaml.parse(
+      fs.readFileSync(path.join(root, "game.yaml"), "utf8"),
+    );
+    if (typeof raw !== "object" || raw === null) return { errors: [], warnings: [] };
+    version = (raw as Record<string, unknown>)["schemaVersion"];
+  } catch {
+    return { errors: [], warnings: [] };
+  }
+  if (version === undefined || version === 1) return { errors: [], warnings: [] };
+  const result = compileProject(root);
+  if (!result.ok) return { errors: [...result.errors], warnings: [] };
+  return { errors: [], warnings: [...result.warnings] };
+}
+
 async function cmdValidate(args: string[]): Promise<void> {
   const root = projectRoot(args);
   const result = await validateProject(root);
+  const compile = authoringCompileGate(root);
+  const errors = [...(result.ok ? [] : result.errors), ...compile.errors];
+  const warnings = [
+    ...((result.ok ? result.warnings : undefined) ?? []),
+    ...compile.warnings,
+  ];
+  const combined: ValidationResult = errors.length
+    ? { ok: false, errors }
+    : warnings.length
+      ? { ok: true, warnings }
+      : { ok: true };
   if (hasFlag(args, "--json") || true) {
-    console.log(JSON.stringify(result, null, 2));
+    console.log(JSON.stringify(combined, null, 2));
   }
-  process.exit(result.ok ? 0 : 1);
+  process.exit(combined.ok ? 0 : 1);
 }
 
 async function cmdTest(args: string[]): Promise<void> {
   const root = projectRoot(args);
+  const compile = authoringCompileGate(root);
+  if (compile.errors.length) {
+    console.log(JSON.stringify({ ok: false, errors: compile.errors }, null, 2));
+    process.exit(1);
+  }
   const seed = getFlag(args, "--seed");
   const modules = await loadModulesForRoot(root);
   const report = await runTests(root, {
@@ -412,6 +461,11 @@ async function cmdDev(args: string[]): Promise<void> {
   const v = await validateProject(root);
   if (!v.ok) {
     console.error(JSON.stringify(v, null, 2));
+    process.exit(1);
+  }
+  const compile = authoringCompileGate(root);
+  if (compile.errors.length) {
+    console.error(JSON.stringify({ ok: false, errors: compile.errors }, null, 2));
     process.exit(1);
   }
 

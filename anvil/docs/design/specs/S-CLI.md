@@ -17,10 +17,10 @@ command.
 |---------|----------------|---------|
 | `version` | — | Print runtime version |
 | `new <name>` | `--genre`, `--root` | Scaffold a schema-v2 project with its `game.spec.yaml` intent contract |
-| `validate [path]` | `--json` | Validate manifest/content/assets using the core validator |
-| `test [path]` | `--json`, `--seed`, `--strict-assets` | Run scenario tests headlessly |
+| `validate [path]` | `--json` | Validate manifest/content/assets using the core validator; schema-v2 projects additionally compile through `@anvil/authoring` (T-M10-011) |
+| `test [path]` | `--json`, `--seed`, `--strict-assets` | Run scenario tests headlessly; schema-v2 projects must pass the authoring compile gate first (T-M10-011) |
 | `observe` | `--root`, `--json`, `--shot` | Emit structured state and optional PNG |
-| `dev [path]` | `--port` | Start the Vite development server |
+| `dev [path]` | `--port` | Start the Vite development server (after core validation and, for schema v2, the authoring compile gate) |
 | `build [path]` | `--out` | Emit a static web build |
 | `migrate [path]` | `--write`, `--json` | Preview (default) or apply the v1→v2 migration |
 | `describe [path]` | `--json` | Compile and summarize manifest, intent, hash, content, capabilities |
@@ -83,8 +83,9 @@ diagnostic pointing at `anvil migrate`.
 ## 6. Verification
 
 CLI behavior is covered by `packages/cli/src/*.test.ts`. The current checkout
-has zero deliberately visible integration failures: the ARPG scaffold surface
-(T-M11-006/T-M11-007) flipped the last pending marker green. The
+has zero deliberately visible integration failures. The
 migration/description/capabilities surface (T-M10-008), the schema-v2 scaffold
-output (T-M10-009), and the ARPG loader/scaffold (T-M11-006/007) are
+output (T-M10-009), the ARPG loader/scaffold (T-M11-006/007), and the
+authoring compile gate on generic `validate`/`test`/`dev` (T-M10-011 —
+including the v1 skip that preserves the S-AUTHORING §2 version boundary) are
 implemented and covered.

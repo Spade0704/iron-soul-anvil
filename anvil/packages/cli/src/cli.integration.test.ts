@@ -175,6 +175,49 @@ describe("Anvil v2 CLI", () => {
     expect(fs.readFileSync(path.join(root, "game.yaml"), "utf8")).toBe(before);
   });
 
+  it("validate compiles v2 projects through the authoring pipeline (T-M10-011)", () => {
+    const root = tempRoot();
+    run(["new", "compile-gate", "--root", root]);
+    expect(JSON.parse(run(["validate", root, "--json"]))).toMatchObject({ ok: true });
+    // Break the intent contract only — the core validator never reads
+    // game.spec.yaml, so without the compile gate this would still pass.
+    fs.writeFileSync(path.join(root, "game.spec.yaml"), "schemaVersion: 2\n");
+    const r = runResult(["validate", root, "--json"]);
+    expect(r.status).toBe(1);
+    const body = JSON.parse(r.stdout);
+    expect(body.ok).toBe(false);
+    expect(
+      body.errors.some((e: { path?: string }) => e.path?.includes("game.spec.yaml")),
+    ).toBe(true);
+  });
+
+  it("test refuses a v2 project whose authoring compile fails (T-M10-011)", () => {
+    const root = tempRoot();
+    run(["new", "compile-gate-test", "--root", root]);
+    fs.writeFileSync(path.join(root, "game.spec.yaml"), "schemaVersion: 2\n");
+    const r = runResult(["test", root, "--json"]);
+    expect(r.status).toBe(1);
+    const body = JSON.parse(r.stdout);
+    expect(body.ok).toBe(false);
+    expect(body.errors.length).toBeGreaterThan(0);
+  });
+
+  it("dev fails fast on authoring compile errors (T-M10-011)", () => {
+    const root = tempRoot();
+    run(["new", "compile-gate-dev", "--root", root]);
+    fs.writeFileSync(path.join(root, "game.spec.yaml"), "schemaVersion: 2\n");
+    const r = runResult(["dev", root]);
+    expect(r.status).toBe(1);
+    const body = JSON.parse(r.stderr);
+    expect(body.ok).toBe(false);
+  });
+
+  it("keeps the v1 version boundary: validate/test skip the compiler (S-AUTHORING §2)", () => {
+    const root = legacyRoot("legacy-v1-gate");
+    expect(JSON.parse(run(["validate", root, "--json"]))).toMatchObject({ ok: true });
+    expect(JSON.parse(run(["test", root, "--json"]))).toMatchObject({ ok: true });
+  });
+
   it("scaffolds a valid ARPG project with the declarative runtime", () => {
     const root = tempRoot();
     run(["new", "agent-arpg", "--genre", "arpg", "--root", root]);

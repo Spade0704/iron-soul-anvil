@@ -10,8 +10,11 @@ exist, the runner performs a one-tick launch smoke.
 
 Each scenario creates a fresh headless game with caller-supplied modules and
 seed override. Core reads `game.yaml`, enters the entry scene, and returns
-`LAUNCH_FAIL` if creation fails. It does not run the schema-v2 authoring
-compiler; an authoring-aware title must compile in its own module/test boundary.
+`LAUNCH_FAIL` if creation fails. The core `runTests` library API itself does
+not run the schema-v2 authoring compiler; the generic `anvil test` (and
+`validate`/`dev`) CLI paths gate schema-v2 projects through
+`@anvil/authoring.compileProject` before running scenarios (T-M10-011), while
+schema-v1 projects skip the compiler per the S-AUTHORING §2 version boundary.
 
 ## Scenario shape
 

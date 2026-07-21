@@ -6,7 +6,7 @@
   "stats": {
     "damage": 18,
     "critChance": 0.08,
-    "critMult": 0.35,
+    "critMult": 1.35,
     "armor": 2
   },
   "flavor": "The Bonekeep's last decree.",

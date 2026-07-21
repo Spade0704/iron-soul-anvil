@@ -18,7 +18,7 @@
 | Gravewake declarative archetypes/campaign rules/provenance | Implemented |
 | Generic CLI loader for `genre-arpg` | Implemented and tested (T-M11-006) |
 | `anvil new --genre arpg` | Implemented and tested (T-M11-007) |
-| Full repository gate | Root `pnpm test` green (CLI integration tests all pass); `pnpm check` blocked by a pre-existing Gravewake content bug (`tyrant_edge.json` `critMult`), tracked under T-M11-009 |
+| Full repository gate | Pass (T-M11-008/009: `@anvil/genre-arpg` runs in root `pnpm test` and CI; `pnpm check` green after the `tyrant_edge.json` `critMult` 0.35→1.35 content fix) |
 
 ## 1. Purpose and boundary
 
@@ -141,6 +141,6 @@ on core scene/tick behavior until a title hook is added.
 | Dispatches area, kill, boss, and level events | Pass |
 | Drives campaign state through authored rules | Pass |
 | Preserves movement, inventory, progression, combat, and web build tests | Pass in title test/build commands |
-| Complete repository check | CLI integration tests now pass; `pnpm check` blocked by a pre-existing title content bug (`tyrant_edge.json` `critMult`), tracked under T-M11-009 |
+| Complete repository check | Pass (T-M11-009: `tyrant_edge.json` `stats.critMult` corrected from 0.35 to 1.35 — the item schema defines `critMult` as a crit damage multiplier with `min(1)`; 0.35 was authored as a bonus fraction, whose multiplier form is 1.35 — and `pnpm check` runs green end to end) |
 
 Tasks: [`../20_FULL_TASK_BREAKDOWN.md`](../20_FULL_TASK_BREAKDOWN.md#M11--declarative-arpg-runtime-and-gravewake-integration).

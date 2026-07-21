@@ -171,10 +171,11 @@ Format inspired by GitHub Spec Kit `tasks` phase + SDD (arXiv:2602.00180).
 
 ## M10 — Schema-v2 agent-native authoring
 
-Library implementation, the CLI `migrate`/`describe`/`capabilities` surface,
-schema-v2 scaffolding, and the example/template migration are present; the
-remaining cutover work is compiler integration in the generic
-validate/test/dev paths and the root-suite inclusion. See
+Complete: library implementation, the CLI `migrate`/`describe`/`capabilities`
+surface, schema-v2 scaffolding, the example/template migration, compiler
+integration in the generic validate/test/dev paths (schema-v2 projects gate
+through `compileProject`; v1 keeps the S-AUTHORING §2 boundary), and the
+root-suite inclusion of `@anvil/authoring`. See
 [`specs/S-AUTHORING.md`](./specs/S-AUTHORING.md).
 
 | ID | Task | Depends | Spec | Status |
@@ -189,17 +190,19 @@ validate/test/dev paths and the root-suite inclusion. See
 | T-M10-008 | Wire CLI `migrate`, `describe`, and `capabilities` with JSON output | T-M10-005,006 | S-CLI, S-AUTHORING | **[x]** |
 | T-M10-009 | Make `anvil new` emit schema v2 plus an intent file | T-M10-005 | S-CLI, S-AUTHORING | **[x]** |
 | T-M10-010 | Migrate active examples and templates to schema v2 | T-M10-009 | S-AUTHORING, 11 | **[x]** |
-| T-M10-011 | Integrate authoring compilation with generic validate/test/dev paths | T-M10-003,008 | S-CLI, S-TEST | **[ ]** |
-| T-M10-012 | Include authoring tests in the root `pnpm test` suite | T-M10-003 | 18 | **[ ]** |
-| T-M10-013 | M10 acceptance: CLI integration tests and complete repository gate pass | T-M10-008..012 | 14, 18 | **[ ]** |
+| T-M10-011 | Integrate authoring compilation with generic validate/test/dev paths | T-M10-003,008 | S-CLI, S-TEST | **[x]** |
+| T-M10-012 | Include authoring tests in the root `pnpm test` suite | T-M10-003 | 18 | **[x]** |
+| T-M10-013 | M10 acceptance: CLI integration tests and complete repository gate pass | T-M10-008..012 | 14, 18 | **[x]** |
 
 ---
 
 ## M11 — Declarative ARPG runtime and Gravewake integration
 
-The package and title integration are implemented, and generic CLI loading
-plus scaffolding landed (T-M11-006/007). Root-suite inclusion and the M11
-acceptance gate remain pending. See [`specs/S-ARPG.md`](./specs/S-ARPG.md).
+Complete: the package and title integration, generic CLI loading plus
+scaffolding (T-M11-006/007), root-suite inclusion of `@anvil/genre-arpg`
+(T-M11-008), and the M11 acceptance gate (T-M11-009 — the tracked Gravewake
+`tyrant_edge.json` `critMult` content bug is fixed and `pnpm check` passes).
+See [`specs/S-ARPG.md`](./specs/S-ARPG.md).
 
 | ID | Task | Depends | Spec | Status |
 |----|------|---------|------|--------|
@@ -210,8 +213,8 @@ acceptance gate remain pending. See [`specs/S-ARPG.md`](./specs/S-ARPG.md).
 | T-M11-005 | Author Gravewake archetypes, campaign rules, and observation provenance | T-M11-002,004 | S-ARPG | **[x]** |
 | T-M11-006 | Add `genre-arpg` to the generic CLI module loader | T-M11-001 | S-CLI, S-ARPG | **[x]** |
 | T-M11-007 | Add a schema-v2 `anvil new --genre arpg` starter | T-M10-009,T-M11-006 | S-CLI, S-ARPG | **[x]** |
-| T-M11-008 | Include ARPG tests in root `pnpm test` and CI paths | T-M11-001 | 18 | **[ ]** |
-| T-M11-009 | M11 acceptance: generic ARPG scaffold plus complete repository gate pass | T-M11-006..008 | 14, 18 | **[ ]** |
+| T-M11-008 | Include ARPG tests in root `pnpm test` and CI paths | T-M11-001 | 18 | **[x]** |
+| T-M11-009 | M11 acceptance: generic ARPG scaffold plus complete repository gate pass | T-M11-006..008 | 14, 18 | **[x]** (Gravewake `tyrant_edge` `critMult` 0.35→1.35 per schema `min(1)` multiplier intent) |
 
 ---
 

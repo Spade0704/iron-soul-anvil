@@ -15,7 +15,7 @@
 | `@anvil/authoring/vite` virtual IR bridge | Implemented |
 | `anvil migrate`, `describe`, `capabilities` | Implemented (T-M10-008) |
 | Schema-v2 `anvil new` output | Implemented (T-M10-009) |
-| Compiler integration in core `validate`/`test`/`dev` | **Not implemented** |
+| Compiler integration in generic `validate`/`test`/`dev` | Implemented (T-M10-011, CLI-level gate; v1 keeps the §2 boundary) |
 | All examples/templates migrated to v2 | Implemented (T-M10-010) |
 
 This status table controls usage. Later sections describe the full contract;
@@ -226,7 +226,7 @@ equivalent.
 | All active examples/templates are v2 | Pass |
 | CLI migrate/describe/capabilities | Pass |
 | Schema-v2 `anvil new` | Pass |
-| Authoring compiler used by generic validate/test/dev | Pending |
-| Full repository gate green | Root `pnpm test` green — the last deliberately failing CLI integration test (ARPG scaffold, T-M11-006/007) now passes; the `pnpm check` aggregate still fails at `validate:gravewake` on a pre-existing title content bug (`tyrant_edge.json` `critMult`), tracked under T-M11-009 |
+| Authoring compiler used by generic validate/test/dev | Pass (T-M10-011: `anvil validate`/`test`/`dev` compile schema-v2 projects through `compileProject` and fail on diagnostics; v1 projects skip per §2) |
+| Full repository gate green | Pass (T-M10-013/T-M11-009: root `pnpm test` includes `@anvil/authoring` + `@anvil/genre-arpg`, and `pnpm check` passes end to end after the `tyrant_edge.json` `critMult` 0.35→1.35 content fix) |
 
 Tasks: [`../20_FULL_TASK_BREAKDOWN.md`](../20_FULL_TASK_BREAKDOWN.md#M10--schema-v2-agent-native-authoring).
