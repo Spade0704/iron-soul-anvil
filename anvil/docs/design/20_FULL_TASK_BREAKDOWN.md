@@ -171,8 +171,9 @@ Format inspired by GitHub Spec Kit `tasks` phase + SDD (arXiv:2602.00180).
 
 ## M10 — Schema-v2 agent-native authoring
 
-Library implementation is present, but the CLI migration and default-project
-cutover are not complete. See [`specs/S-AUTHORING.md`](./specs/S-AUTHORING.md).
+Library implementation and the CLI `migrate`/`describe`/`capabilities` surface
+are present, but the default-project cutover is not complete. See
+[`specs/S-AUTHORING.md`](./specs/S-AUTHORING.md).
 
 | ID | Task | Depends | Spec | Status |
 |----|------|---------|------|--------|
@@ -183,7 +184,7 @@ cutover are not complete. See [`specs/S-AUTHORING.md`](./specs/S-AUTHORING.md).
 | T-M10-005 | Implement transactional, idempotent `migrateProject` library API | T-M10-001 | S-AUTHORING | **[x]** |
 | T-M10-006 | Implement capability catalog and per-project descriptors | T-M10-003 | S-AUTHORING | **[x]** |
 | T-M10-007 | Implement Vite `virtual:anvil-game-ir` bridge | T-M10-003 | S-AUTHORING | **[x]** |
-| T-M10-008 | Wire CLI `migrate`, `describe`, and `capabilities` with JSON output | T-M10-005,006 | S-CLI, S-AUTHORING | **[ ]** |
+| T-M10-008 | Wire CLI `migrate`, `describe`, and `capabilities` with JSON output | T-M10-005,006 | S-CLI, S-AUTHORING | **[x]** |
 | T-M10-009 | Make `anvil new` emit schema v2 plus an intent file | T-M10-005 | S-CLI, S-AUTHORING | **[ ]** |
 | T-M10-010 | Migrate active examples and templates to schema v2 | T-M10-009 | S-AUTHORING, 11 | **[ ]** |
 | T-M10-011 | Integrate authoring compilation with generic validate/test/dev paths | T-M10-003,008 | S-CLI, S-TEST | **[ ]** |

@@ -3,6 +3,10 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
+  compileProject,
+  migrateProject,
+} from "@anvil/authoring";
+import {
   AGENT_TOOL_CATALOG,
   ANVIL_VERSION,
   createGame,
@@ -74,6 +78,15 @@ async function main(): Promise<void> {
       case "build":
         await cmdBuild(args.slice(1));
         break;
+      case "migrate":
+        cmdMigrate(args.slice(1));
+        break;
+      case "describe":
+        cmdDescribe(args.slice(1));
+        break;
+      case "capabilities":
+        cmdCapabilities(args.slice(1));
+        break;
       case "tools":
         cmdTools(args.slice(1));
         break;
@@ -110,6 +123,9 @@ Commands:
   observe [--root path] [--json] [--shot]
   dev [path] [--port N]
   build [path] [--out dir]
+  migrate [path] [--write] [--json]
+  describe [path] [--json]
+  capabilities [path] [--json]
   assets missing [path] [--json]
   audio list [--kind music|sfx] [--prefix path] [--query q] [--limit N] [--json]
   sprites list [--prefix path] [--query q] [--limit N] [--json]
@@ -686,6 +702,112 @@ function emitDataPackage(
       2,
     ),
   );
+}
+
+/** Preview/apply the schema v1 → v2 migration (S-CLI / T-M10-008). */
+function cmdMigrate(args: string[]): void {
+  const root = projectRoot(args);
+  const result = migrateProject(root, { write: hasFlag(args, "--write") });
+  if (hasFlag(args, "--json")) {
+    console.log(JSON.stringify(result, null, 2));
+    process.exit(result.ok ? 0 : 1);
+  }
+  if (!result.ok) {
+    console.error(JSON.stringify(result, null, 2));
+    process.exit(1);
+  }
+  if (!result.changed) {
+    console.log(`Already schema v${result.toVersion} — nothing to migrate (${result.root})`);
+  } else {
+    console.log(
+      `${result.written ? "Migrated" : "Migration preview"} ${result.root} ` +
+        `v${result.fromVersion} → v${result.toVersion}`,
+    );
+    for (const change of result.changes) {
+      console.log(`  ${change.action} ${change.path}`);
+    }
+    if (!result.written) console.log("Re-run with --write to apply.");
+  }
+  process.exit(0);
+}
+
+/** Compile and summarize manifest, intent, hash, content, capabilities (S-CLI / T-M10-008). */
+function cmdDescribe(args: string[]): void {
+  const root = projectRoot(args);
+  const result = compileProject(root);
+  if (!result.ok) {
+    console.log(JSON.stringify({ ok: false, root, errors: result.errors }, null, 2));
+    process.exit(1);
+  }
+  const ir = result.ir;
+  const payload = {
+    ok: true,
+    root,
+    anvilVersion: VERSION,
+    irVersion: ir.irVersion,
+    schemaVersion: ir.schemaVersion,
+    sourceHash: ir.sourceHash,
+    manifest: ir.manifest,
+    intent: {
+      summary: ir.intent.summary,
+      quality: ir.intent.quality,
+      players: ir.intent.players,
+      platforms: ir.intent.platforms,
+    },
+    counts: {
+      requirements: ir.intent.requirements.length,
+      capabilities: ir.capabilities.length,
+      traits: Object.keys(ir.traits).length,
+      prefabs: Object.keys(ir.prefabs).length,
+      triggers: Object.keys(ir.triggers).length,
+      machines: Object.keys(ir.machines).length,
+      content: Object.keys(ir.content).length,
+    },
+    capabilities: ir.capabilities.map((c) => ({
+      id: c.id,
+      version: c.version,
+      kind: c.kind,
+      summary: c.summary,
+    })),
+    content: Object.keys(ir.content),
+    warnings: result.warnings,
+  };
+  if (hasFlag(args, "--json")) {
+    console.log(JSON.stringify(payload, null, 2));
+    process.exit(0);
+  }
+  console.log(`${ir.manifest.id} — ${ir.manifest.title} (schema v${ir.schemaVersion})`);
+  console.log(`  root: ${root}`);
+  console.log(`  sourceHash: ${ir.sourceHash}`);
+  console.log(`  intent: ${ir.intent.summary}`);
+  console.log(
+    `  counts: requirements=${payload.counts.requirements} capabilities=${payload.counts.capabilities} ` +
+      `traits=${payload.counts.traits} prefabs=${payload.counts.prefabs} ` +
+      `triggers=${payload.counts.triggers} machines=${payload.counts.machines} ` +
+      `content=${payload.counts.content}`,
+  );
+  console.log(`  capabilities: ${ir.capabilities.map((c) => c.id).join(", ")}`);
+  process.exit(0);
+}
+
+/** Report the capability descriptors selected for a project (S-CLI / T-M10-008). */
+function cmdCapabilities(args: string[]): void {
+  const root = projectRoot(args);
+  const result = compileProject(root);
+  if (!result.ok) {
+    console.log(JSON.stringify({ ok: false, root, errors: result.errors }, null, 2));
+    process.exit(1);
+  }
+  const capabilities = result.ir.capabilities;
+  if (hasFlag(args, "--json")) {
+    console.log(JSON.stringify({ ok: true, root, capabilities }, null, 2));
+    process.exit(0);
+  }
+  console.log(`Capabilities for ${result.ir.manifest.id}: ${capabilities.length}`);
+  for (const c of capabilities) {
+    console.log(`  ${c.id}@${c.version} [${c.kind}] — ${c.summary}`);
+  }
+  process.exit(0);
 }
 
 function escapeHtml(s: string): string {

@@ -22,6 +22,9 @@ command.
 | `observe` | `--root`, `--json`, `--shot` | Emit structured state and optional PNG |
 | `dev [path]` | `--port` | Start the Vite development server |
 | `build [path]` | `--out` | Emit a static web build |
+| `migrate [path]` | `--write`, `--json` | Preview (default) or apply the v1→v2 migration |
+| `describe [path]` | `--json` | Compile and summarize manifest, intent, hash, content, capabilities |
+| `capabilities [path]` | `--json` | Report the capability descriptors selected for the project |
 | `assets missing [path]` | `--json` | List missing required assets |
 | `audio list` | `--kind`, `--prefix`, `--query`, `--limit`, `--json` | Search bundled audio |
 | `sprites list` | `--prefix`, `--query`, `--limit`, `--json` | Search bundled sprites |
@@ -50,15 +53,15 @@ recognized by the schema package but not by the CLI scaffold command.
 
 | Planned command/change | Intended behavior | Tracking |
 |------------------------|-------------------|----------|
-| `migrate [path] [--write] [--json]` | Preview/apply v1→v2 migration | M10 |
-| `describe [path] --json` | Compile and summarize manifest, intent, hash, content, capabilities | M10 |
-| `capabilities [path] --json` | Report selected capability descriptors | M10 |
 | schema-v2 default scaffolds | Create intent contract with every project | M10 |
 | `new --genre arpg` | Create a generic declarative ARPG starter | M11 |
 | generic `genre-arpg` loader | Import `@anvil/genre-arpg` for a manifest module id | M11 |
 
-Use `migrateProject`, `compileProject`, `capabilityCatalog`, and
-`capabilitiesForGame` from `@anvil/authoring` until the CLI projections land.
+`migrate`, `describe`, and `capabilities` landed with T-M10-008 (thin
+projections over `migrateProject` and `compileProject` from
+`@anvil/authoring`). `describe` and `capabilities` require a schema-v2
+project; on a v1 project they exit 1 with the structured `MIGRATION_REQUIRED`
+diagnostic pointing at `anvil migrate`.
 
 ## 5. Path safety
 
@@ -70,6 +73,7 @@ Use `migrateProject`, `compileProject`, `capabilityCatalog`, and
 ## 6. Verification
 
 CLI behavior is covered by `packages/cli/src/*.test.ts`. The current checkout
-has three deliberately visible integration failures for the pending M10/M11
-surfaces: schema-v2 scaffold output, migration/description/capabilities, and
-ARPG scaffold support.
+has two deliberately visible integration failures for the pending M10/M11
+surfaces: schema-v2 scaffold output (T-M10-009) and ARPG scaffold support
+(T-M11-007). The migration/description/capabilities surface (T-M10-008) is
+implemented and covered.

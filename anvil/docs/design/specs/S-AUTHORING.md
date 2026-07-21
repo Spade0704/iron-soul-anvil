@@ -13,7 +13,7 @@
 | `migrateProject` preview/write API | Implemented |
 | Capability catalog/project selection APIs | Implemented |
 | `@anvil/authoring/vite` virtual IR bridge | Implemented |
-| `anvil migrate`, `describe`, `capabilities` | **Not implemented** |
+| `anvil migrate`, `describe`, `capabilities` | Implemented (T-M10-008) |
 | Schema-v2 `anvil new` output | **Not implemented** |
 | Compiler integration in core `validate`/`test`/`dev` | **Not implemented** |
 | All examples/templates migrated to v2 | **Not implemented** |
@@ -211,8 +211,9 @@ Diagnostics are sorted by path, code, and message.
 - Migration writes temporary files and commits `game.yaml` last.
 - Repeated compilation of unchanged sources produces the same hash and IR.
 
-Some current compiler hints mention `anvil migrate`; until the CLI task lands,
-translate that hint to the `migrateProject` API shown above.
+Compiler hints that mention `anvil migrate` now resolve to the implemented CLI
+command (T-M10-008); the `migrateProject` API shown above remains the library
+equivalent.
 
 ## 10. Acceptance status
 
@@ -223,8 +224,9 @@ translate that hint to the `migrateProject` API shown above.
 | Compiler determinism, immutability, merge, cycle/conflict, and rule reference tests | Pass |
 | Vite virtual IR bridge tests | Pass |
 | All active examples/templates are v2 | Pending |
-| CLI migrate/describe/capabilities and schema-v2 new | Pending |
+| CLI migrate/describe/capabilities | Pass |
+| Schema-v2 `anvil new` | Pending |
 | Authoring compiler used by generic validate/test/dev | Pending |
-| Full repository gate green | Pending; three CLI integration tests fail |
+| Full repository gate green | Pending; two CLI integration tests fail |
 
 Tasks: [`../20_FULL_TASK_BREAKDOWN.md`](../20_FULL_TASK_BREAKDOWN.md#M10--schema-v2-agent-native-authoring).

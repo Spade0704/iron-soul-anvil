@@ -55,7 +55,8 @@ Important script boundary:
 - `pnpm test` explicitly filters the established packages and currently omits
   `@anvil/authoring` and `@anvil/genre-arpg`.
 - It still includes `@anvil/cli`, whose M10/M11 integration tests currently
-  fail three cases.
+  fail two cases (schema-v2 scaffold and ARPG scaffold; the T-M10-008
+  migrate/describe/capabilities cases pass).
 - Running the two new package tests directly currently passes 13 tests.
 - `pnpm check` is the intended aggregate gate and currently fails at the CLI
   integration step. It must remain visible until the missing work lands.

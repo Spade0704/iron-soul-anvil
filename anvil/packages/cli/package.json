@@ -12,6 +12,7 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@anvil/authoring": "workspace:*",
     "@anvil/core": "workspace:*",
     "@anvil/schema": "workspace:*",
     "@anvil/genre-card": "workspace:*",
