@@ -1,0 +1,12 @@
+{
+  "id": "minion",
+  "traits": ["enemy", "melee"],
+  "components": {
+    "actor": {
+      "hp": 10,
+      "speed": 50,
+      "team": "enemy",
+      "ai": "chase_melee"
+    }
+  }
+}

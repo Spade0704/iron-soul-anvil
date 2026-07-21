@@ -16,9 +16,9 @@
 | `arpgModule` export | Implemented |
 | Vite/Node immutable-IR use in Gravewake | Implemented |
 | Gravewake declarative archetypes/campaign rules/provenance | Implemented |
-| Generic CLI loader for `genre-arpg` | **Not implemented** |
-| `anvil new --genre arpg` | **Not implemented** |
-| Full repository gate | **Not green**; blocked by pending CLI integration tests |
+| Generic CLI loader for `genre-arpg` | Implemented and tested (T-M11-006) |
+| `anvil new --genre arpg` | Implemented and tested (T-M11-007) |
+| Full repository gate | Root `pnpm test` green (CLI integration tests all pass); `pnpm check` blocked by a pre-existing Gravewake content bug (`tyrant_edge.json` `critMult`), tracked under T-M11-009 |
 
 ## 1. Purpose and boundary
 
@@ -116,17 +116,20 @@ See the production example:
 - [`../../../../games/gravewake/browser/contentEmbed.ts`](../../../../games/gravewake/browser/contentEmbed.ts)
 - [`../../../../games/gravewake/vite.config.ts`](../../../../games/gravewake/vite.config.ts)
 
-## 6. Current CLI limitation
+## 6. CLI integration (T-M11-006/007)
 
 `GameYamlSchema` and module normalization know the `arpg` genre and
-`genre-arpg` id. The CLI's runtime module loader does not yet import
-`@anvil/genre-arpg`; unknown non-relative ids are currently skipped. Gravewake
-still runs because it also declares `./dist/module.js`, whose default export is
-the title module created by `defineArpgGame`.
-
-Do not use `anvil new --genre arpg` or assume that a manifest containing only
-`modules: [genre-arpg]` will launch a generic ARPG. Complete the M11 CLI tasks
-first.
+`genre-arpg` id, and the CLI's runtime module loader now imports
+`@anvil/genre-arpg` for the `genre-arpg` manifest id (same registration
+pattern as the other genre packages in
+`packages/cli/src/loadModules.ts`). `anvil new --genre arpg` scaffolds the
+schema-v2 `templates/arpg-starter`: a minimal declarative project
+(trait/prefab/actor/area/progression content mirroring the package fixture)
+that validates, tests, and compiles with `genre-arpg` in its selected
+capabilities. Gravewake additionally declares `./dist/module.js`, whose
+default export is the title module created by `defineArpgGame`; the base
+`arpgModule` remains an inert capability marker, so a generic scaffold runs
+on core scene/tick behavior until a title hook is added.
 
 ## 7. Gravewake acceptance status
 
@@ -138,6 +141,6 @@ first.
 | Dispatches area, kill, boss, and level events | Pass |
 | Drives campaign state through authored rules | Pass |
 | Preserves movement, inventory, progression, combat, and web build tests | Pass in title test/build commands |
-| Complete repository check | Pending due to CLI integration failures |
+| Complete repository check | CLI integration tests now pass; `pnpm check` blocked by a pre-existing title content bug (`tyrant_edge.json` `critMult`), tracked under T-M11-009 |
 
 Tasks: [`../20_FULL_TASK_BREAKDOWN.md`](../20_FULL_TASK_BREAKDOWN.md#M11--declarative-arpg-runtime-and-gravewake-integration).

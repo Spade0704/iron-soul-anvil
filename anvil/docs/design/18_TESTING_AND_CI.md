@@ -53,14 +53,20 @@ pnpm --dir ../games/gravewake build:web
 Important script boundary:
 
 - `pnpm test` explicitly filters the established packages and currently omits
-  `@anvil/authoring` and `@anvil/genre-arpg`.
-- It still includes `@anvil/cli`, whose M11 integration tests currently fail
-  one case (ARPG scaffold, T-M11-007; the T-M10-008
+  `@anvil/authoring` and `@anvil/genre-arpg` (inclusion is T-M10-012 /
+  T-M11-008).
+- It includes `@anvil/cli`, whose integration tests all pass: the ARPG
+  scaffold case (T-M11-006/007) flipped green, joining the T-M10-008
   migrate/describe/capabilities cases and the T-M10-009 schema-v2 scaffold
-  case pass).
-- Running the two new package tests directly currently passes 13 tests.
-- `pnpm check` is the intended aggregate gate and currently fails at the CLI
-  integration step. It must remain visible until the missing work lands.
+  case. Zero deliberately failing tests remain in the suite.
+- Running the two omitted package tests directly currently passes 13 tests.
+- `pnpm check` is the intended aggregate gate; its CLI integration step is
+  now green. The aggregate currently stops later, at `validate:gravewake`, on
+  a pre-existing title content bug
+  (`games/gravewake/content/items/tyrant_edge.json` declares
+  `stats.critMult: 0.35`; the item schema requires `critMult >= 1`). That is
+  title content, not engine/CLI state; it must be fixed for the M11
+  acceptance gate (T-M11-009).
 
 ## GitHub Actions workflow
 
@@ -83,10 +89,9 @@ Known CI coverage gaps:
 
 - workflow path filters trigger only for `anvil/**` and the workflow file, so
   a game-only change does not run CI;
-- the workflow inherits the root test omission of authoring/ARPG package tests;
-- it does not run Gravewake lint or the browser production build; and
-- with the remaining CLI integration failure (T-M11-007), `build-test` is not
-  green.
+- the workflow inherits the root test omission of authoring/ARPG package tests
+  (T-M10-012 / T-M11-008); and
+- it does not run Gravewake lint or the browser production build.
 
 ## Failure investigation order
 

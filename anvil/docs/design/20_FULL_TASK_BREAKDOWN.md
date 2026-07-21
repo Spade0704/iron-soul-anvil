@@ -197,8 +197,9 @@ validate/test/dev paths and the root-suite inclusion. See
 
 ## M11 — Declarative ARPG runtime and Gravewake integration
 
-The package and title integration are implemented. Generic CLI loading and
-scaffolding remain pending. See [`specs/S-ARPG.md`](./specs/S-ARPG.md).
+The package and title integration are implemented, and generic CLI loading
+plus scaffolding landed (T-M11-006/007). Root-suite inclusion and the M11
+acceptance gate remain pending. See [`specs/S-ARPG.md`](./specs/S-ARPG.md).
 
 | ID | Task | Depends | Spec | Status |
 |----|------|---------|------|--------|
@@ -207,8 +208,8 @@ scaffolding remain pending. See [`specs/S-ARPG.md`](./specs/S-ARPG.md).
 | T-M11-003 | Implement `defineArpgGame` restricted title hook | T-M11-001 | S-ARPG | **[x]** |
 | T-M11-004 | Compile Gravewake through the same IR in Node and Vite/browser | T-M11-001 | S-ARPG | **[x]** |
 | T-M11-005 | Author Gravewake archetypes, campaign rules, and observation provenance | T-M11-002,004 | S-ARPG | **[x]** |
-| T-M11-006 | Add `genre-arpg` to the generic CLI module loader | T-M11-001 | S-CLI, S-ARPG | **[ ]** |
-| T-M11-007 | Add a schema-v2 `anvil new --genre arpg` starter | T-M10-009,T-M11-006 | S-CLI, S-ARPG | **[ ]** |
+| T-M11-006 | Add `genre-arpg` to the generic CLI module loader | T-M11-001 | S-CLI, S-ARPG | **[x]** |
+| T-M11-007 | Add a schema-v2 `anvil new --genre arpg` starter | T-M10-009,T-M11-006 | S-CLI, S-ARPG | **[x]** |
 | T-M11-008 | Include ARPG tests in root `pnpm test` and CI paths | T-M11-001 | 18 | **[ ]** |
 | T-M11-009 | M11 acceptance: generic ARPG scaffold plus complete repository gate pass | T-M11-006..008 | 14, 18 | **[ ]** |
 

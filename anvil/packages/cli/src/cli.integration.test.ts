@@ -181,7 +181,17 @@ describe("Anvil v2 CLI", () => {
     const manifest = fs.readFileSync(path.join(root, "game.yaml"), "utf8");
     expect(manifest).toContain("genre: arpg");
     expect(manifest).toContain("genre-arpg");
+    expect(fs.readFileSync(path.join(root, "game.yaml"), "utf8")).toContain("schemaVersion: 2");
+    expect(fs.existsSync(path.join(root, "game.spec.yaml"))).toBe(true);
     expect(JSON.parse(run(["validate", root, "--json"]))).toMatchObject({ ok: true });
+    // T-M11-006: the generic loader resolves genre-arpg (anvil test loads
+    // modules for the root), and the capability selection includes it.
     expect(JSON.parse(run(["test", root, "--json"]))).toMatchObject({ ok: true });
+    const capabilities = JSON.parse(run(["capabilities", root, "--json"]));
+    expect(capabilities.capabilities.map((item: { id: string }) => item.id)).toEqual([
+      "authoring-v2",
+      "core",
+      "genre-arpg",
+    ]);
   });
 });

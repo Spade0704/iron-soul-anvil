@@ -227,6 +227,6 @@ equivalent.
 | CLI migrate/describe/capabilities | Pass |
 | Schema-v2 `anvil new` | Pass |
 | Authoring compiler used by generic validate/test/dev | Pending |
-| Full repository gate green | Pending; one CLI integration test fails (ARPG scaffold, T-M11-007) |
+| Full repository gate green | Root `pnpm test` green — the last deliberately failing CLI integration test (ARPG scaffold, T-M11-006/007) now passes; the `pnpm check` aggregate still fails at `validate:gravewake` on a pre-existing title content bug (`tyrant_edge.json` `critMult`), tracked under T-M11-009 |
 
 Tasks: [`../20_FULL_TASK_BREAKDOWN.md`](../20_FULL_TASK_BREAKDOWN.md#M10--schema-v2-agent-native-authoring).

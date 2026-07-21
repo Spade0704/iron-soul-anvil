@@ -15,6 +15,7 @@
     "@anvil/authoring": "workspace:*",
     "@anvil/core": "workspace:*",
     "@anvil/schema": "workspace:*",
+    "@anvil/genre-arpg": "workspace:*",
     "@anvil/genre-card": "workspace:*",
     "@anvil/genre-topdown2d": "workspace:*",
     "@anvil/genre-vn": "workspace:*",

@@ -117,7 +117,7 @@ function printHelp(): void {
   console.log(`anvil ${VERSION}
 Commands:
   version
-  new <name> [--genre none|card|topdown2d|vn|shmup|fps2] [--root <dir>]
+  new <name> [--genre none|card|topdown2d|vn|shmup|fps2|arpg] [--root <dir>]
   validate [path] [--json]
   test [path] [--json] [--seed N] [--strict-assets]
   observe [--root path] [--json] [--shot]
@@ -255,6 +255,7 @@ async function cmdNew(args: string[]): Promise<void> {
     "vn",
     "shmup",
     "fps2",
+    "arpg",
   ] as const;
   if (!(supported as readonly string[]).includes(genre)) {
     usageError(
@@ -271,6 +272,7 @@ async function cmdNew(args: string[]): Promise<void> {
     vn: "vn-starter",
     shmup: "shmup-starter",
     fps2: "fps2-starter",
+    arpg: "arpg-starter",
   };
   const templateName = genreTemplate[genre];
   if (templateName) {

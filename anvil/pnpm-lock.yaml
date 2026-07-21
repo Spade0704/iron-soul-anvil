@@ -119,6 +119,9 @@ importers:
       '@anvil/core':
         specifier: workspace:*
         version: link:../core
+      '@anvil/genre-arpg':
+        specifier: workspace:*
+        version: link:../genre-arpg
       '@anvil/genre-card':
         specifier: workspace:*
         version: link:../genre-card
@@ -2369,8 +2372,8 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
-  uWebSockets.js@https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/442087c0a01bf146acb7386910739ec81df06700:
-    resolution: {tarball: https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/442087c0a01bf146acb7386910739ec81df06700}
+  uWebSockets.js@git+https://git@github.com:uNetworking/uWebSockets.js.git#442087c0a01bf146acb7386910739ec81df06700:
+    resolution: {commit: 442087c0a01bf146acb7386910739ec81df06700, repo: git@github.com:uNetworking/uWebSockets.js.git, type: git}
     version: 20.49.0
 
   uid-safe@2.1.5:
@@ -2619,7 +2622,7 @@ snapshots:
   '@colyseus/uwebsockets-transport@0.16.10(@colyseus/core@0.16.24(@colyseus/schema@3.0.76)(@pm2/io@6.1.0))':
     dependencies:
       '@colyseus/core': 0.16.24(@colyseus/schema@3.0.76)(@pm2/io@6.1.0)
-      uWebSockets.js: https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/442087c0a01bf146acb7386910739ec81df06700
+      uWebSockets.js: git+https://git@github.com:uNetworking/uWebSockets.js.git#442087c0a01bf146acb7386910739ec81df06700
       uwebsockets-express: 1.4.2
     transitivePeerDependencies:
       - supports-color
@@ -4517,7 +4520,7 @@ snapshots:
 
   typescript@5.9.3: {}
 
-  uWebSockets.js@https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/442087c0a01bf146acb7386910739ec81df06700: {}
+  uWebSockets.js@git+https://git@github.com:uNetworking/uWebSockets.js.git#442087c0a01bf146acb7386910739ec81df06700: {}
 
   uid-safe@2.1.5:
     dependencies:

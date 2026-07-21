@@ -43,7 +43,7 @@ should be preferred by agents.
 `new --genre` currently accepts:
 
 ```text
-none card topdown2d vn shmup fps2
+none card topdown2d vn shmup fps2 arpg
 ```
 
 It emits `schemaVersion: 2` with a `game.spec.yaml` intent contract
@@ -52,15 +52,18 @@ personalize the manifest id/title plus the intent summary; the `none` scaffold
 writes the base project and commits it through the shipped `migrateProject`
 path, so a fresh scaffold and a fresh migration carry the identical baseline
 intent (three requirements: `lifecycle.start`, `input.responds`,
-`lifecycle.restart`). `arpg` is recognized by the schema package but not by
-the CLI scaffold command.
+`lifecycle.restart`). `arpg` (T-M11-007) copies the schema-v2
+`templates/arpg-starter`, a minimal declarative project (trait/prefab/actor/
+area/progression content mirroring the `@anvil/genre-arpg` package fixture)
+that validates, tests, and compiles through `describe`/`capabilities` with
+`genre-arpg` selected.
 
 ## 4. Planned, not implemented
 
-| Planned command/change | Intended behavior | Tracking |
-|------------------------|-------------------|----------|
-| `new --genre arpg` | Create a generic declarative ARPG starter | M11 |
-| generic `genre-arpg` loader | Import `@anvil/genre-arpg` for a manifest module id | M11 |
+No CLI commands are currently in the planned-but-unimplemented state. The M11
+CLI surface landed with T-M11-006 (the generic module loader imports
+`@anvil/genre-arpg` for the `genre-arpg` manifest id) and T-M11-007
+(`new --genre arpg` copies the schema-v2 ARPG starter).
 
 Schema-v2 default scaffolds landed with T-M10-009: every `anvil new` project
 is created with the intent contract. `migrate`, `describe`, and
@@ -80,7 +83,8 @@ diagnostic pointing at `anvil migrate`.
 ## 6. Verification
 
 CLI behavior is covered by `packages/cli/src/*.test.ts`. The current checkout
-has one deliberately visible integration failure for the pending M11 surface:
-ARPG scaffold support (T-M11-007). The migration/description/capabilities
-surface (T-M10-008) and the schema-v2 scaffold output (T-M10-009) are
+has zero deliberately visible integration failures: the ARPG scaffold surface
+(T-M11-006/T-M11-007) flipped the last pending marker green. The
+migration/description/capabilities surface (T-M10-008), the schema-v2 scaffold
+output (T-M10-009), and the ARPG loader/scaffold (T-M11-006/007) are
 implemented and covered.
