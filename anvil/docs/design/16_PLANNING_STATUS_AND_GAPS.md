@@ -40,8 +40,8 @@ This currently passes 13 tests across those packages.
 
 | ID | Gap | Evidence | Required correction |
 |----|-----|----------|---------------------|
-| G-M10-CLI-1 | `anvil new` emits schema v1 | CLI source/template output and failing integration test | Emit v2 manifest plus intent, then migrate templates/examples |
-| G-M10-CLI-2 | `migrate`, `describe`, and `capabilities` are unknown commands | `pnpm anvil --help`; failing CLI integration test | Add command routing, JSON/text output, and tests |
+| G-M10-CLI-1 | ~~`anvil new` emits schema v1~~ Closed by T-M10-009/010: `new` emits v2 plus intent; templates/examples migrated | CLI integration test now passes | — |
+| G-M10-CLI-2 | ~~`migrate`, `describe`, and `capabilities` are unknown commands~~ Closed by T-M10-008 | CLI integration tests now pass | — |
 | G-M10-VERIFY | Generic `validate` does not call `compileProject` | core validator implementation | Define and implement v2 validation/test/dev integration |
 | G-M11-NEW | `new --genre arpg` is rejected | CLI genre list and failing integration test | Add a schema-v2 ARPG starter |
 | G-M11-LOAD | CLI loader has no `genre-arpg` branch | `packages/cli/src/loadModules.ts` | Import/register `arpgModule` or the agreed generic module |
@@ -51,22 +51,20 @@ This currently passes 13 tests across those packages.
 
 ## Current failing gate
 
-`pnpm check` reaches the CLI package tests and fails three integration tests:
+`pnpm check` reaches the CLI package tests and fails one integration test:
 
-1. the scaffold contains `schemaVersion: 1` instead of 2 and cannot be
-   described through the absent command;
-2. `migrate` is unknown; and
-3. `new --genre arpg` rejects `arpg`.
+1. `new --genre arpg` rejects `arpg` (T-M11-007).
 
-These are product integration failures, not documentation-only noise. Do not
-mark M10/M11 complete or instruct agents to suppress the tests.
+This is a product integration failure, not documentation-only noise. Do not
+mark M11 complete or instruct agents to suppress the test.
 
 ## Non-blocking implementation limitations
 
 - The Vite bridge watches the default `game.spec.yaml` path rather than a
   custom manifest `intent` filename.
-- Some compiler diagnostics still suggest the future `anvil migrate` command;
-  callers must use `migrateProject` until CLI wiring lands.
+- Compiler diagnostics that suggest `anvil migrate` now resolve to the
+  implemented CLI command (T-M10-008); `migrateProject` remains the library
+  equivalent.
 - Core observe snapshots use observation `schemaVersion: 1`; that is a separate
   protocol version and does not mirror the project manifest version.
 - Workspace package versions (`0.1.0`), runtime `ANVIL_VERSION` (`0.7.0`), and

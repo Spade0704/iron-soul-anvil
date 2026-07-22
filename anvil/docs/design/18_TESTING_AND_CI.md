@@ -30,7 +30,7 @@ behavior matters. Avoid wall-clock assertions.
 | M7 | FPS movement/raycast/hitscan example |
 | M8 | loopback/raw-WS spike plus Colyseus security/ops/integration |
 | M9 | Gravewake movement, instances, inventory, progression, combat |
-| M10 | compiler/migration/Vite/capability tests plus pending CLI integration |
+| M10 | compiler/migration/Vite/capability tests plus CLI integration (migrate/describe/capabilities, schema-v2 scaffold, validate/test/dev compile gate) |
 | M11 | ARPG materializer/rule/hook tests plus Gravewake IR regressions |
 
 ## Local commands and current results
@@ -40,7 +40,6 @@ From `anvil/`:
 ```bash
 pnpm -r run build
 pnpm test
-pnpm --filter @anvil/authoring --filter @anvil/genre-arpg test
 pnpm lint
 pnpm validate:examples
 pnpm test:examples
@@ -52,13 +51,23 @@ pnpm --dir ../games/gravewake build:web
 
 Important script boundary:
 
-- `pnpm test` explicitly filters the established packages and currently omits
-  `@anvil/authoring` and `@anvil/genre-arpg`.
-- It still includes `@anvil/cli`, whose M10/M11 integration tests currently
-  fail three cases.
-- Running the two new package tests directly currently passes 13 tests.
-- `pnpm check` is the intended aggregate gate and currently fails at the CLI
-  integration step. It must remain visible until the missing work lands.
+- `pnpm test` explicitly filters the workspace packages and, since
+  T-M10-012 / T-M11-008, includes `@anvil/authoring` and `@anvil/genre-arpg`
+  in the root run (no separate direct invocation needed).
+- It includes `@anvil/cli`, whose integration tests all pass — the T-M10-008
+  migrate/describe/capabilities cases, the T-M10-009 schema-v2 scaffold case,
+  the T-M11-006/007 ARPG loader/scaffold case, and the T-M10-011 authoring
+  compile-gate cases (validate/test/dev fail on compile diagnostics; v1
+  projects skip the compiler). Zero deliberately failing tests remain.
+- `pnpm check` (the aggregate gate) also exercises the compile gate
+  indirectly: `validate:examples`/`test:examples`/`validate:gravewake` now
+  compile every schema-v2 project through `@anvil/authoring`.
+- `pnpm check` is the aggregate gate and passes end to end: the former
+  `validate:gravewake` stop (`games/gravewake/content/items/tyrant_edge.json`
+  declared `stats.critMult: 0.35` against the schema's `critMult >= 1`
+  multiplier contract) was fixed to `1.35` under the T-M11-009 acceptance
+  (the value had been authored as a bonus fraction; `1.35` is its multiplier
+  form).
 
 ## GitHub Actions workflow
 
@@ -80,10 +89,12 @@ The example matrix validates and tests `hello-empty`, `hello-card`,
 Known CI coverage gaps:
 
 - workflow path filters trigger only for `anvil/**` and the workflow file, so
-  a game-only change does not run CI;
-- the workflow inherits the root test omission of authoring/ARPG package tests;
-- it does not run Gravewake lint or the browser production build; and
-- with the current CLI integration failures, `build-test` is not green.
+  a game-only change does not run CI; and
+- it does not run Gravewake lint or the browser production build.
+
+The workflow's `pnpm test` step now runs `@anvil/authoring` and
+`@anvil/genre-arpg` with the rest of the root suite (T-M10-012 / T-M11-008),
+so CI inherits their coverage without workflow changes.
 
 ## Failure investigation order
 

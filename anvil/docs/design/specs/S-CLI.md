@@ -16,12 +16,15 @@ command.
 | Command | Main arguments | Purpose |
 |---------|----------------|---------|
 | `version` | — | Print runtime version |
-| `new <name>` | `--genre`, `--root` | Scaffold a schema-v1 project |
-| `validate [path]` | `--json` | Validate manifest/content/assets using the core validator |
-| `test [path]` | `--json`, `--seed`, `--strict-assets` | Run scenario tests headlessly |
+| `new <name>` | `--genre`, `--root` | Scaffold a schema-v2 project with its `game.spec.yaml` intent contract |
+| `validate [path]` | `--json` | Validate manifest/content/assets using the core validator; schema-v2 projects additionally compile through `@anvil/authoring` (T-M10-011) |
+| `test [path]` | `--json`, `--seed`, `--strict-assets` | Run scenario tests headlessly; schema-v2 projects must pass the authoring compile gate first (T-M10-011) |
 | `observe` | `--root`, `--json`, `--shot` | Emit structured state and optional PNG |
-| `dev [path]` | `--port` | Start the Vite development server |
+| `dev [path]` | `--port` | Start the Vite development server (after core validation and, for schema v2, the authoring compile gate) |
 | `build [path]` | `--out` | Emit a static web build |
+| `migrate [path]` | `--write`, `--json` | Preview (default) or apply the v1→v2 migration |
+| `describe [path]` | `--json` | Compile and summarize manifest, intent, hash, content, capabilities |
+| `capabilities [path]` | `--json` | Report the capability descriptors selected for the project |
 | `assets missing [path]` | `--json` | List missing required assets |
 | `audio list` | `--kind`, `--prefix`, `--query`, `--limit`, `--json` | Search bundled audio |
 | `sprites list` | `--prefix`, `--query`, `--limit`, `--json` | Search bundled sprites |
@@ -40,25 +43,35 @@ should be preferred by agents.
 `new --genre` currently accepts:
 
 ```text
-none card topdown2d vn shmup fps2
+none card topdown2d vn shmup fps2 arpg
 ```
 
-It emits `schemaVersion: 1` and copies the matching v1 template. `arpg` is
-recognized by the schema package but not by the CLI scaffold command.
+It emits `schemaVersion: 2` with a `game.spec.yaml` intent contract
+(T-M10-009). Template genres copy the matching schema-v2 starter and
+personalize the manifest id/title plus the intent summary; the `none` scaffold
+writes the base project and commits it through the shipped `migrateProject`
+path, so a fresh scaffold and a fresh migration carry the identical baseline
+intent (three requirements: `lifecycle.start`, `input.responds`,
+`lifecycle.restart`). `arpg` (T-M11-007) copies the schema-v2
+`templates/arpg-starter`, a minimal declarative project (trait/prefab/actor/
+area/progression content mirroring the `@anvil/genre-arpg` package fixture)
+that validates, tests, and compiles through `describe`/`capabilities` with
+`genre-arpg` selected.
 
 ## 4. Planned, not implemented
 
-| Planned command/change | Intended behavior | Tracking |
-|------------------------|-------------------|----------|
-| `migrate [path] [--write] [--json]` | Preview/apply v1→v2 migration | M10 |
-| `describe [path] --json` | Compile and summarize manifest, intent, hash, content, capabilities | M10 |
-| `capabilities [path] --json` | Report selected capability descriptors | M10 |
-| schema-v2 default scaffolds | Create intent contract with every project | M10 |
-| `new --genre arpg` | Create a generic declarative ARPG starter | M11 |
-| generic `genre-arpg` loader | Import `@anvil/genre-arpg` for a manifest module id | M11 |
+No CLI commands are currently in the planned-but-unimplemented state. The M11
+CLI surface landed with T-M11-006 (the generic module loader imports
+`@anvil/genre-arpg` for the `genre-arpg` manifest id) and T-M11-007
+(`new --genre arpg` copies the schema-v2 ARPG starter).
 
-Use `migrateProject`, `compileProject`, `capabilityCatalog`, and
-`capabilitiesForGame` from `@anvil/authoring` until the CLI projections land.
+Schema-v2 default scaffolds landed with T-M10-009: every `anvil new` project
+is created with the intent contract. `migrate`, `describe`, and
+`capabilities` landed with T-M10-008 (thin
+projections over `migrateProject` and `compileProject` from
+`@anvil/authoring`). `describe` and `capabilities` require a schema-v2
+project; on a v1 project they exit 1 with the structured `MIGRATION_REQUIRED`
+diagnostic pointing at `anvil migrate`.
 
 ## 5. Path safety
 
@@ -70,6 +83,9 @@ Use `migrateProject`, `compileProject`, `capabilityCatalog`, and
 ## 6. Verification
 
 CLI behavior is covered by `packages/cli/src/*.test.ts`. The current checkout
-has three deliberately visible integration failures for the pending M10/M11
-surfaces: schema-v2 scaffold output, migration/description/capabilities, and
-ARPG scaffold support.
+has zero deliberately visible integration failures. The
+migration/description/capabilities surface (T-M10-008), the schema-v2 scaffold
+output (T-M10-009), the ARPG loader/scaffold (T-M11-006/007), and the
+authoring compile gate on generic `validate`/`test`/`dev` (T-M10-011 —
+including the v1 skip that preserves the S-AUTHORING §2 version boundary) are
+implemented and covered.

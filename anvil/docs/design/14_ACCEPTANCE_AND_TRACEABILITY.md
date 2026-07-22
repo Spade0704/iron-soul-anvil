@@ -1,8 +1,8 @@
 # 14 — Acceptance and traceability
 
 This matrix maps intended behavior to executable evidence and task status.
-Completed historical milestones remain listed; M10/M11 rows show the current
-integration gap.
+Completed historical milestones remain listed; the M10/M11 rows closed with
+the T-M10-013 and T-M11-009 acceptance gates.
 
 ## Runtime and genre baseline
 
@@ -37,14 +37,14 @@ integration gap.
 | AU05 Migration preview/write/idempotence | migration tests | T-M10-005 | Pass as library API |
 | AU06 Machine-readable capabilities | capability/compiler tests | T-M10-006 | Pass as library API |
 | AU07 Browser IR parity | Vite bridge tests and Gravewake build | T-M10-007,T-M11-004 | Pass |
-| AU08 Agent CLI projections | CLI integration tests | T-M10-008 | **Fail: commands absent** |
-| AU09 Schema-v2 starter/default examples | CLI integration + example matrix | T-M10-009,010 | **Fail: scaffolds/examples remain v1** |
-| AU10 Generic verification compiles intent/rules | CLI integration | T-M10-011 | **Pending** |
+| AU08 Agent CLI projections | CLI integration tests | T-M10-008 | Pass |
+| AU09 Schema-v2 starter/default examples | CLI integration + example matrix | T-M10-009,010 | Pass |
+| AU10 Generic verification compiles intent/rules | CLI integration | T-M10-011 | Pass (validate/test/dev gate schema-v2 projects through `compileProject`; v1 skips per S-AUTHORING §2) |
 | AR01 Deterministic ARPG materialization | genre-arpg unit tests | T-M11-001 | Pass |
 | AR02 Finite rule execution and observation | genre-arpg unit tests + Gravewake tests | T-M11-002,005 | Pass |
 | AR03 Restricted title hook | genre-arpg tests + API review | T-M11-003 | Pass |
-| AR04 Generic ARPG loading/scaffold | CLI integration tests | T-M11-006,007 | **Fail/pending** |
-| GATE Complete repo verification | `pnpm check` | T-M10-013,T-M11-009 | **Fail: three CLI integration tests** |
+| AR04 Generic ARPG loading/scaffold | CLI integration tests | T-M11-006,007 | Pass |
+| GATE Complete repo verification | `pnpm check` | T-M10-013,T-M11-009 | Pass (root suite includes authoring + genre-arpg; Gravewake `tyrant_edge` `critMult` content fix landed; full aggregate green) |
 
 ## GameCraft-style criteria
 

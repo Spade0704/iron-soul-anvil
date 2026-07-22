@@ -1,8 +1,12 @@
 id: topdown-starter
 title: Hello Topdown
+version: 0.0.0
 genre: topdown2d
 modules:
   - genre-topdown2d
 entryScene: main
 seed: 1
-schemaVersion: 1
+contentRoot: content
+assetsRoot: assets
+schemaVersion: 2
+intent: game.spec.yaml

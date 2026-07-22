@@ -1,8 +1,12 @@
 id: fps2-starter
 title: Hello FPS2
+version: 0.0.0
 genre: fps2
 modules:
   - genre-fps2
 entryScene: main
 seed: 1
-schemaVersion: 1
+contentRoot: content
+assetsRoot: assets
+schemaVersion: 2
+intent: game.spec.yaml

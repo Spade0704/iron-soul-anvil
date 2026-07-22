@@ -1,0 +1,12 @@
+id: arpg-starter
+title: Hello ARPG
+version: 0.0.0
+genre: arpg
+modules:
+  - genre-arpg
+entryScene: main
+seed: 1
+contentRoot: content
+assetsRoot: assets
+schemaVersion: 2
+intent: game.spec.yaml

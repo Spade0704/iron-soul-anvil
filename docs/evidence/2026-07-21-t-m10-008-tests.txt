@@ -1,0 +1,185 @@
+T-M10-008 executes-clean evidence — CLI migrate/describe/capabilities wiring
+Date: 2026-07-21T13:56:29Z  Branch: claude/herald-marketing-publish-ru4szs  Base HEAD: 699f0f6
+Builder: lattice:iron-soul-anvil/cli-builder-01  Directive: dir-20260721-anvil-m10-008
+
+########## 1. BASELINE (pre-change): pnpm test tail — 3 deliberate CLI integration failures (S-CLI §6) ##########
+=== BASELINE pnpm test (pre-change, 2026-07-21T13:52:08Z, HEAD 699f0f6) ===
+packages/cli test:      27| 
+packages/cli test:  ❯ src/cli.integration.test.ts:69:5
+packages/cli test: ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+packages/cli test:  Test Files  1 failed (1)
+packages/cli test:       Tests  3 failed (3)
+packages/cli test:    Start at  13:52:20
+packages/cli test:    Duration  709ms (transform 45ms, setup 0ms, collect 42ms, tests 381ms, environment 0ms, prepare 61ms)
+packages/cli test: Failed
+/home/user/iron-soul-anvil/anvil/packages/cli:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @anvil/cli@0.1.0 test: `vitest run --passWithNoTests`
+Exit status 1
+ ELIFECYCLE  Test failed. See above for more details.
+
+########## 2. POST-CHANGE: full 'pnpm test' (root filter set) — summary lines ##########
+packages/schema test:  Test Files  4 passed (4)
+packages/schema test:       Tests  17 passed (17)
+packages/core test:  Test Files  15 passed (15)
+packages/core test:       Tests  105 passed (105)
+packages/genre-card test:  Test Files  1 passed (1)
+packages/genre-card test:       Tests  4 passed (4)
+packages/genre-shmup test:  Test Files  1 passed (1)
+packages/genre-shmup test:       Tests  6 passed (6)
+packages/genre-topdown2d test:  Test Files  3 passed (3)
+packages/genre-topdown2d test:       Tests  17 passed (17)
+packages/genre-vn test:  Test Files  1 passed (1)
+packages/genre-vn test:       Tests  4 passed (4)
+packages/genre-fps2 test:  Test Files  1 passed (1)
+packages/genre-fps2 test:       Tests  7 passed (7)
+packages/genre-net test:  Test Files  2 passed (2)
+packages/genre-net test:       Tests  6 passed (6)
+packages/net-colyseus test:  Test Files  1 passed (1)
+packages/net-colyseus test:       Tests  3 passed (3)
+packages/cli test: ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+packages/cli test:  Test Files  1 failed (1)
+packages/cli test:       Tests  2 failed | 7 passed (9)
+(root pnpm test exit=1: the 2 REMAINING failures are the pre-existing deliberate ones for
+ out-of-scope surfaces T-M10-009 schema-v2 scaffold and T-M11-007 ARPG scaffold; baseline had 3.
+ The T-M10-008 migration case flipped green; 6 new T-M10-008 tests all pass.)
+
+########## 3. POST-CHANGE: @anvil/cli vitest detail (verbose; the 2 × are the pre-existing deliberate out-of-scope failures) ##########
+ × src/cli.integration.test.ts > Anvil v2 CLI > scaffolds, validates, describes, and reports capabilities
+ ✓ src/cli.integration.test.ts > Anvil v2 CLI > previews migration without mutation and applies it on request 508ms
+ ✓ src/cli.integration.test.ts > Anvil v2 CLI > reports migrate no-op on an already-v2 project 404ms
+ ✓ src/cli.integration.test.ts > Anvil v2 CLI > fails migrate with a structured error when game.yaml is missing
+ ✓ src/cli.integration.test.ts > Anvil v2 CLI > describes a migrated v2 project with hash, counts, and capabilities 617ms
+ ✓ src/cli.integration.test.ts > Anvil v2 CLI > rejects describe on a v1 project with the migration diagnostic
+ ✓ src/cli.integration.test.ts > Anvil v2 CLI > reports selected capability descriptors with JSON output 414ms
+ ✓ src/cli.integration.test.ts > Anvil v2 CLI > prints human-readable migrate preview without --json and without writing
+ × src/cli.integration.test.ts > Anvil v2 CLI > scaffolds a valid ARPG project with the declarative runtime
+ Test Files  1 failed (1)
+      Tests  2 failed | 7 passed (9)
+
+########## 4. Packages omitted by root filter early-stop, run directly — all green / no tests ##########
+packages/recipes test: No test files found, exiting with code 0
+packages/render-phaser test: No test files found, exiting with code 0
+packages/genre-arpg test:  Test Files  1 passed (1)
+packages/genre-arpg test:       Tests  4 passed (4)
+packages/authoring test:  Test Files  3 passed (3)
+packages/authoring test:       Tests  9 passed (9)
+
+########## 5. pnpm lint ##########
+eslint: clean (exit 0)
+
+########## 6. CLI SMOKE — all three commands against a copy of anvil/examples/hello-card ##########
+=== SMOKE: fixture = copy of anvil/examples/hello-card (v1) at /tmp/claude-0/-home-user/eaff15f1-038e-5dfa-9d01-634b240cf9e1/scratchpad/hello-card-smoke ===
+--- $ anvil migrate <fixture> --json   (preview, no write)
+{
+  "ok": true,
+  "root": "/tmp/claude-0/-home-user/eaff15f1-038e-5dfa-9d01-634b240cf9e1/scratchpad/hello-card-smoke",
+  "fromVersion": 1,
+  "toVersion": 2,
+  "changed": true,
+  "written": false,
+  "changes": [
+    {
+      "path": "game.yaml",
+      "action": "update",
+      "before": "id: hello-card\ntitle: Hello Card\ngenre: card\nmodules:\n  - genre-card\nentryScene: battle\nseed: 1\nschemaVersion: 1\n",
+      "after": "id: hello-card\ntitle: Hello Card\nversion: 0.0.0\ngenre: card\nmodules:\n  - genre-card\nentryScene: battle\nseed: 1\ncontentRoot: content\nassetsRoot: assets\nschemaVersion: 2\nintent: game.spec.yaml\n"
+    }
+  ]
+}
+exit=0
+--- $ anvil migrate <fixture> --write --json
+{
+  "ok": true,
+  "root": "/tmp/claude-0/-home-user/eaff15f1-038e-5dfa-9d01-634b240cf9e1/scratchpad/hello-card-smoke",
+  "fromVersion": 1,
+  "toVersion": 2,
+  "changed": true,
+  "written": true,
+  "changes": [
+    {
+      "path": "game.yaml",
+      "action": "update",
+      "before": "id: hello-card\ntitle: Hello Card\ngenre: card\nmodules:\n  - genre-card\nentryScene: battle\nseed: 1\nschemaVersion: 1\n",
+exit(pipe head)=0
+--- $ anvil describe <fixture> --json
+{
+  "ok": true,
+  "root": "/tmp/claude-0/-home-user/eaff15f1-038e-5dfa-9d01-634b240cf9e1/scratchpad/hello-card-smoke",
+  "anvilVersion": "0.7.0",
+  "irVersion": 1,
+  "schemaVersion": 2,
+  "sourceHash": "2664d38700ccec6e67ea048e948f5e478c2ce519d140844d996b8566b083d8cb",
+  "manifest": {
+    "id": "hello-card",
+    "title": "Hello Card",
+    "version": "0.0.0",
+    "genre": "card",
+    "modules": [
+      "genre-card"
+    ],
+    "entryScene": "battle",
+    "seed": 1,
+    "contentRoot": "content",
+    "assetsRoot": "assets",
+    "intent": "game.spec.yaml",
+    "schemaVersion": 2
+  },
+  "intent": {
+    "summary": "Hello Card is an Anvil game. Replace this migration summary with the intended player experience.",
+    "quality": "playable",
+    "players": {
+      "min": 1,
+      "max": 1
+    },
+    "platforms": [
+      "web"
+    ]
+  },
+  "counts": {
+    "requirements": 3,
+    "capabilities": 3,
+    "traits": 0,
+    "prefabs": 0,
+    "triggers": 0,
+    "machines": 0,
+    "content": 5
+  },
+  "capabilities": [
+    {
+      "id": "authoring-v2",
+      "version": "0.9.0",
+      "kind": "authoring",
+      "summary": "Deterministic intent, trait, prefab, trigger, state-machine, and IR compiler."
+    },
+    {
+      "id": "core",
+      "version": "0.9.0",
+      "kind": "core",
+      "summary": "Deterministic scenes, entities, input, save, combat, RPG services, audio, UI, and observation."
+    },
+    {
+      "id": "genre-card",
+      "version": "0.9.0",
+      "kind": "genre",
+      "summary": "Turn-based deck battle runtime."
+    }
+  ],
+  "content": [
+    "battles/tutorial.json",
+    "cards/bash.json",
+    "cards/defend.json",
+    "cards/strike.json",
+    "enemies/slime.json"
+  ],
+  "warnings": []
+}
+exit=0
+--- $ anvil capabilities <fixture> --json (ids only shown via jq-less filter)
+  "ok": true,
+      "id": "authoring-v2",
+      "id": "core",
+      "id": "genre-card",
+exit(pipe grep)=0
+--- $ anvil migrate <fixture> (human, already v2)
+Already schema v2 — nothing to migrate (/tmp/claude-0/-home-user/eaff15f1-038e-5dfa-9d01-634b240cf9e1/scratchpad/hello-card-smoke)
+exit=0

@@ -1,0 +1,9 @@
+{
+  "id": "melee",
+  "requires": ["enemy"],
+  "components": {
+    "actor": {
+      "ai": "chase_melee"
+    }
+  }
+}

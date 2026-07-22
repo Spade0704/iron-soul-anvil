@@ -79,7 +79,7 @@ export async function validateProject(root: string): Promise<ValidationResult> {
       errors.push(
         err("MODULE_UNKNOWN", `Unknown module: ${m}`, {
           path: "game.yaml/modules",
-          hint: "Allowed: genre-card, genre-topdown2d, genre-vn, genre-shmup, genre-fps2, genre-net, or ./relative.js",
+          hint: "Allowed: genre-card, genre-topdown2d, genre-vn, genre-shmup, genre-fps2, genre-arpg, genre-net, or ./relative.js",
         }),
       );
     }

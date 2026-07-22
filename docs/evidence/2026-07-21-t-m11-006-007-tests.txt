@@ -1,0 +1,323 @@
+# T-M11-006 + T-M11-007 executes-clean evidence
+# Date: 2026-07-21  Builder: lattice:iron-soul-anvil/cli-builder-03  Directive: dir-20260721-anvil-m11-006-007
+# Branch: claude/herald-marketing-publish-ru4szs  Base: 9932bfd
+
+=== pnpm lint ===
+
+> anvil-monorepo@0.1.0 lint /home/user/iron-soul-anvil/anvil
+> eslint .
+
+lint exit=0
+
+=== pnpm test (full root suite) ===
+
+> anvil-monorepo@0.1.0 test /home/user/iron-soul-anvil/anvil
+> pnpm --filter @anvil/schema --filter @anvil/core --filter @anvil/genre-card --filter @anvil/genre-topdown2d --filter @anvil/genre-vn --filter @anvil/genre-shmup --filter @anvil/genre-fps2 --filter @anvil/genre-net --filter @anvil/net-colyseus --filter @anvil/cli --filter @anvil/render-phaser --filter @anvil/recipes run test
+
+Scope: 12 of 24 workspace projects
+packages/schema test$ vitest run
+packages/recipes test$ vitest run --passWithNoTests
+packages/recipes test:  RUN  v2.1.9 /home/user/iron-soul-anvil/anvil/packages/recipes
+packages/recipes test: include: **/*.{test,spec}.?(c|m)[jt]s?(x)
+packages/recipes test: exclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*
+packages/recipes test: No test files found, exiting with code 0
+packages/schema test:  RUN  v2.1.9 /home/user/iron-soul-anvil/anvil/packages/schema
+packages/recipes test: Done
+packages/schema test:  ✓ src/errors.test.ts (6 tests) 9ms
+packages/schema test:  ✓ src/contentSchemas.test.ts (4 tests) 8ms
+packages/schema test:  ✓ src/gameDescriptor.test.ts (5 tests) 8ms
+packages/schema test:  ✓ src/gameIntent.test.ts (2 tests) 7ms
+packages/schema test:  Test Files  4 passed (4)
+packages/schema test:       Tests  17 passed (17)
+packages/schema test:    Start at  19:34:27
+packages/schema test:    Duration  768ms (transform 158ms, setup 0ms, collect 296ms, tests 32ms, environment 1ms, prepare 365ms)
+packages/schema test: Done
+packages/core test$ vitest run
+packages/core test:  RUN  v2.1.9 /home/user/iron-soul-anvil/anvil/packages/core
+packages/core test:  ✓ src/rpg/rpg.test.ts (17 tests) 22ms
+packages/core test:  ✓ src/engineExtras2.test.ts (12 tests) 14ms
+packages/core test:  ✓ src/engineExtras3.test.ts (19 tests) 15ms
+packages/core test: stderr | src/combat/combatExtras.test.ts > wireCombatAudio > plays cues on combat events
+packages/core test: ASSET_MISSING path=audio/sfx/combat/hit_01.ogg
+packages/core test: ASSET_MISSING path=audio/sfx/combat/rpg_battle_swing.wav
+packages/core test: ASSET_MISSING path=audio/sfx/combat/explosion.ogg
+packages/core test: ASSET_MISSING path=audio/sfx/ui/confirmation_001.ogg
+packages/core test:  ✓ src/combat/combatExtras.test.ts (9 tests) 10ms
+packages/core test:  ✓ src/engineExtras.test.ts (12 tests) 13ms
+packages/core test:  ✓ src/content/validateContentTree.test.ts (5 tests) 29ms
+packages/core test:  ✓ src/audio/AudioCatalog.test.ts (6 tests) 21ms
+packages/core test:  ✓ src/errors.integration.test.ts (8 tests) 40ms
+packages/core test:  ✓ src/agent/agent.test.ts (6 tests) 50ms
+packages/core test:  ✓ src/save/saveGame.test.ts (3 tests) 27ms
+packages/core test:  ✓ src/kernel/Kernel.test.ts (3 tests) 11ms
+packages/core test:  ✓ src/perf.smoke.test.ts (1 test) 46ms
+packages/core test: stderr | src/assets/AssetServer.test.ts > AssetServer > returns texture for existing png and greybox for missing
+packages/core test: ASSET_MISSING path=nope.png
+packages/core test:  ✓ src/assets/AssetServer.test.ts (2 tests) 8ms
+packages/core test:  ✓ src/kernel/Kernel.services.test.ts (1 test) 20ms
+packages/core test:  ✓ src/systems/AnimationSystem.test.ts (1 test) 3ms
+packages/core test:  Test Files  15 passed (15)
+packages/core test:       Tests  105 passed (105)
+packages/core test:    Start at  19:34:28
+packages/core test:    Duration  2.73s (transform 1.13s, setup 0ms, collect 2.37s, tests 328ms, environment 4ms, prepare 1.26s)
+packages/core test: Done
+packages/genre-card test$ vitest run
+packages/genre-topdown2d test$ vitest run
+packages/genre-vn test$ vitest run
+packages/genre-shmup test$ vitest run
+packages/genre-vn test:  RUN  v2.1.9 /home/user/iron-soul-anvil/anvil/packages/genre-vn
+packages/genre-card test:  RUN  v2.1.9 /home/user/iron-soul-anvil/anvil/packages/genre-card
+packages/genre-topdown2d test:  RUN  v2.1.9 /home/user/iron-soul-anvil/anvil/packages/genre-topdown2d
+packages/genre-shmup test:  RUN  v2.1.9 /home/user/iron-soul-anvil/anvil/packages/genre-shmup
+packages/genre-topdown2d test:  ✓ src/iso.test.ts (2 tests) 4ms
+packages/genre-card test:  ✓ src/Battle.test.ts (4 tests) 13ms
+packages/genre-card test:  Test Files  1 passed (1)
+packages/genre-card test:       Tests  4 passed (4)
+packages/genre-card test:    Start at  19:34:31
+packages/genre-card test:    Duration  1.25s (transform 133ms, setup 0ms, collect 130ms, tests 13ms, environment 0ms, prepare 213ms)
+packages/genre-card test: Done
+packages/genre-fps2 test$ vitest run
+packages/genre-vn test:  ✓ src/VnRuntime.test.ts (4 tests) 5ms
+packages/genre-vn test:  Test Files  1 passed (1)
+packages/genre-vn test:       Tests  4 passed (4)
+packages/genre-vn test:    Start at  19:34:31
+packages/genre-vn test:    Duration  2.07s (transform 637ms, setup 0ms, collect 1.09s, tests 5ms, environment 0ms, prepare 270ms)
+packages/genre-fps2 test:  RUN  v2.1.9 /home/user/iron-soul-anvil/anvil/packages/genre-fps2
+packages/genre-topdown2d test:  ✓ src/TopdownSim.test.ts (11 tests) 63ms
+packages/genre-vn test: Done
+packages/genre-net test$ vitest run
+packages/genre-topdown2d test:  ✓ src/pathfind.test.ts (4 tests) 219ms
+packages/genre-topdown2d test:  Test Files  3 passed (3)
+packages/genre-topdown2d test:       Tests  17 passed (17)
+packages/genre-topdown2d test:    Start at  19:34:31
+packages/genre-topdown2d test:    Duration  2.24s (transform 851ms, setup 0ms, collect 2.32s, tests 287ms, environment 6ms, prepare 685ms)
+packages/genre-topdown2d test: Done
+packages/net-colyseus test$ vitest run src/security.test.ts && tsx src/run-ops-check.ts && tsx src/run-integration.ts
+packages/genre-shmup test:  ✓ src/ShmupSim.test.ts (6 tests) 14ms
+packages/genre-net test:  RUN  v2.1.9 /home/user/iron-soul-anvil/anvil/packages/genre-net
+packages/genre-shmup test:  Test Files  1 passed (1)
+packages/genre-shmup test:       Tests  6 passed (6)
+packages/genre-shmup test:    Start at  19:34:31
+packages/genre-shmup test:    Duration  2.83s (transform 1.13s, setup 0ms, collect 1.75s, tests 14ms, environment 0ms, prepare 130ms)
+packages/genre-shmup test: Done
+packages/render-phaser test$ vitest run --passWithNoTests
+packages/net-colyseus test:  RUN  v2.1.9 /home/user/iron-soul-anvil/anvil/packages/net-colyseus
+packages/genre-net test:  ✓ src/NetRoom.test.ts (5 tests) 7ms
+packages/render-phaser test:  RUN  v2.1.9 /home/user/iron-soul-anvil/anvil/packages/render-phaser
+packages/render-phaser test: include: **/*.{test,spec}.?(c|m)[jt]s?(x)
+packages/render-phaser test: exclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*
+packages/render-phaser test: No test files found, exiting with code 0
+packages/render-phaser test: Done
+packages/net-colyseus test:  ✓ src/security.test.ts (3 tests) 5ms
+packages/net-colyseus test:  Test Files  1 passed (1)
+packages/net-colyseus test:       Tests  3 passed (3)
+packages/net-colyseus test:    Start at  19:34:34
+packages/net-colyseus test:    Duration  637ms (transform 86ms, setup 0ms, collect 56ms, tests 5ms, environment 0ms, prepare 138ms)
+packages/genre-net test:  ✓ src/NetServer.test.ts (1 test) 271ms
+packages/genre-net test:  Test Files  2 passed (2)
+packages/genre-net test:       Tests  6 passed (6)
+packages/genre-net test:    Start at  19:34:34
+packages/genre-net test:    Duration  1.01s (transform 236ms, setup 0ms, collect 371ms, tests 278ms, environment 1ms, prepare 329ms)
+packages/genre-net test: Done
+packages/genre-fps2 test:  ✓ src/Fps2Sim.test.ts (7 tests) 8ms
+packages/genre-fps2 test:  Test Files  1 passed (1)
+packages/genre-fps2 test:       Tests  7 passed (7)
+packages/genre-fps2 test:    Start at  19:34:33
+packages/genre-fps2 test:    Duration  1.95s (transform 884ms, setup 0ms, collect 1.44s, tests 8ms, environment 0ms, prepare 108ms)
+packages/genre-fps2 test: Done
+packages/net-colyseus test: OK ops { port: 25691, rooms: 0 }
+packages/net-colyseus test: OK colyseus integration { x0: 100, x1: 522, peerX: 522 }
+packages/net-colyseus test: Done
+packages/cli test$ vitest run --passWithNoTests
+packages/cli test:  RUN  v2.1.9 /home/user/iron-soul-anvil/anvil/packages/cli
+packages/cli test:  ✓ src/cli.integration.test.ts (9 tests) 3756ms
+packages/cli test:    ✓ Anvil v2 CLI > scaffolds, validates, describes, and reports capabilities 735ms
+packages/cli test:    ✓ Anvil v2 CLI > previews migration without mutation and applies it on request 543ms
+packages/cli test:    ✓ Anvil v2 CLI > reports migrate no-op on an already-v2 project 341ms
+packages/cli test:    ✓ Anvil v2 CLI > describes a migrated v2 project with hash, counts, and capabilities 556ms
+packages/cli test:    ✓ Anvil v2 CLI > reports selected capability descriptors with JSON output 356ms
+packages/cli test:    ✓ Anvil v2 CLI > scaffolds a valid ARPG project with the declarative runtime 702ms
+packages/cli test:  Test Files  1 passed (1)
+packages/cli test:       Tests  9 passed (9)
+packages/cli test:    Start at  19:34:38
+packages/cli test:    Duration  4.18s (transform 61ms, setup 0ms, collect 59ms, tests 3.76s, environment 0ms, prepare 68ms)
+packages/cli test: Done
+pnpm test exit=0
+
+=== off-suite direct package tests (authoring, genre-arpg, render-phaser, recipes) ===
+Scope: 4 of 24 workspace projects
+packages/authoring test$ vitest run
+packages/genre-arpg test$ vitest run
+packages/render-phaser test$ vitest run --passWithNoTests
+packages/recipes test$ vitest run --passWithNoTests
+packages/render-phaser test:  RUN  v2.1.9 /home/user/iron-soul-anvil/anvil/packages/render-phaser
+packages/render-phaser test: include: **/*.{test,spec}.?(c|m)[jt]s?(x)
+packages/render-phaser test: exclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*
+packages/render-phaser test: No test files found, exiting with code 0
+packages/authoring test:  RUN  v2.1.9 /home/user/iron-soul-anvil/anvil/packages/authoring
+packages/render-phaser test: Done
+packages/recipes test:  RUN  v2.1.9 /home/user/iron-soul-anvil/anvil/packages/recipes
+packages/recipes test: include: **/*.{test,spec}.?(c|m)[jt]s?(x)
+packages/recipes test: exclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*
+packages/recipes test: No test files found, exiting with code 0
+packages/genre-arpg test:  RUN  v2.1.9 /home/user/iron-soul-anvil/anvil/packages/genre-arpg
+packages/recipes test: Done
+packages/genre-arpg test:  ✓ src/genre-arpg.test.ts (4 tests) 22ms
+packages/genre-arpg test:  Test Files  1 passed (1)
+packages/genre-arpg test:       Tests  4 passed (4)
+packages/genre-arpg test:    Start at  19:34:57
+packages/genre-arpg test:    Duration  759ms (transform 138ms, setup 0ms, collect 152ms, tests 22ms, environment 0ms, prepare 131ms)
+packages/genre-arpg test: Done
+packages/authoring test:  ✓ src/vite.test.ts (2 tests) 25ms
+packages/authoring test:  ✓ src/compiler.test.ts (5 tests) 57ms
+packages/authoring test:  ✓ src/migrate.test.ts (2 tests) 42ms
+packages/authoring test:  Test Files  3 passed (3)
+packages/authoring test:       Tests  9 passed (9)
+packages/authoring test:    Start at  19:34:57
+packages/authoring test:    Duration  938ms (transform 338ms, setup 0ms, collect 1.02s, tests 125ms, environment 1ms, prepare 391ms)
+packages/authoring test: Done
+off-suite exit=0
+
+=== CLI smoke: anvil new --genre arpg (fresh project) ===
+/tmp/claude-0/-home-user/eaff15f1-038e-5dfa-9d01-634b240cf9e1/scratchpad/arpg-evidence/evidence-arpg
+new exit=0
+--- game.yaml ---
+id: evidence-arpg
+title: evidence-arpg
+version: 0.0.0
+genre: arpg
+modules:
+  - genre-arpg
+entryScene: main
+seed: 1
+contentRoot: content
+assetsRoot: assets
+schemaVersion: 2
+intent: game.spec.yaml
+--- validate --json ---
+{
+  "ok": true
+}
+validate exit=0
+--- test --json ---
+{
+  "ok": true,
+  "results": [
+    {
+      "id": "smoke",
+      "pass": true,
+      "ticks": 5
+    }
+  ]
+}
+test exit=0
+--- describe --json (counts + capabilities excerpt) ---
+{
+  "ok": true,
+  "root": "/tmp/claude-0/-home-user/eaff15f1-038e-5dfa-9d01-634b240cf9e1/scratchpad/arpg-evidence/evidence-arpg",
+  "anvilVersion": "0.7.0",
+  "irVersion": 1,
+  "schemaVersion": 2,
+  "sourceHash": "6ab7cfc0451530b579df8868f5c5de31ee27da5be2b7126ede109fa6a073cd3c",
+  "manifest": {
+    "id": "evidence-arpg",
+    "title": "evidence-arpg",
+    "version": "0.0.0",
+    "genre": "arpg",
+    "modules": [
+      "genre-arpg"
+    ],
+    "entryScene": "main",
+    "seed": 1,
+    "contentRoot": "content",
+    "assetsRoot": "assets",
+    "intent": "game.spec.yaml",
+    "schemaVersion": 2
+  },
+  "intent": {
+    "summary": "evidence-arpg is an Anvil game. Replace this migration summary with the intended player experience.",
+    "quality": "playable",
+    "players": {
+      "min": 1,
+      "max": 1
+    },
+    "platforms": [
+      "web"
+    ]
+  },
+  "counts": {
+    "requirements": 3,
+    "capabilities": 3,
+    "traits": 2,
+    "prefabs": 1,
+    "triggers": 0,
+    "machines": 0,
+    "content": 6
+  },
+  "capabilities": [
+    {
+      "id": "authoring-v2",
+      "version": "0.9.0",
+      "kind": "authoring",
+      "summary": "Deterministic intent, trait, prefab, trigger, state-machine, and IR compiler."
+    },
+    {
+      "id": "core",
+      "version": "0.9.0",
+      "kind": "core",
+      "summary": "Deterministic scenes, entities, input, save, combat, RPG services, audio, UI, and observation."
+    },
+    {
+      "id": "genre-arpg",
+      "version": "0.9.0",
+      "kind": "genre",
+      "summary": "Declarative action-RPG content, archetypes, campaign rules, and restricted title hooks."
+    }
+  ],
+  "content": [
+    "actors/brute.json",
+    "areas/room.json",
+    "prefabs/minion.json",
+    "progression.json",
+    "traits/enemy.json",
+    "traits/melee.json"
+  ],
+  "warnings": []
+}
+describe exit=0
+--- capabilities --json (ids) ---
+{
+  "ok": true,
+  "capabilityIds": [
+    "authoring-v2",
+    "core",
+    "genre-arpg"
+  ]
+}
+capabilities exit=0
+
+=== pnpm check (aggregate gate) — NOTE ===
+pnpm check now passes its CLI integration step (previously the deliberate T-M11-007 failure).
+The aggregate still stops at validate:gravewake on a PRE-EXISTING title content bug,
+untouched by this change and out of this directive's scope (no games/ edits):
+{
+  "ok": false,
+  "errors": [
+    {
+      "code": "SCHEMA_INVALID",
+      "message": "Number must be greater than or equal to 1",
+      "path": "content/items/tyrant_edge.json/stats.critMult",
+      "hint": "Content failed schema for items",
+      "example": {
+        "id": "rusty_sword",
+        "name": "Rusty Sword",
+        "slot": "weapon",
+        "stats": {
+          "damage": 5
+        }
+      },
+      "fingerprint": "anvil-e6c7a2ee"
+    }
+  ]
+}
+validate:gravewake exit=1 (pre-existing; tracked under T-M11-009)

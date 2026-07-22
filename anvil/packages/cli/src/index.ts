@@ -2,6 +2,12 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import yaml from "yaml";
+import {
+  compileProject,
+  migrateProject,
+} from "@anvil/authoring";
+import type { AnvilError, ValidationResult } from "@anvil/schema";
 import {
   AGENT_TOOL_CATALOG,
   ANVIL_VERSION,
@@ -74,6 +80,15 @@ async function main(): Promise<void> {
       case "build":
         await cmdBuild(args.slice(1));
         break;
+      case "migrate":
+        cmdMigrate(args.slice(1));
+        break;
+      case "describe":
+        cmdDescribe(args.slice(1));
+        break;
+      case "capabilities":
+        cmdCapabilities(args.slice(1));
+        break;
       case "tools":
         cmdTools(args.slice(1));
         break;
@@ -104,12 +119,15 @@ function printHelp(): void {
   console.log(`anvil ${VERSION}
 Commands:
   version
-  new <name> [--genre none|card|topdown2d|vn|shmup|fps2] [--root <dir>]
+  new <name> [--genre none|card|topdown2d|vn|shmup|fps2|arpg] [--root <dir>]
   validate [path] [--json]
   test [path] [--json] [--seed N] [--strict-assets]
   observe [--root path] [--json] [--shot]
   dev [path] [--port N]
   build [path] [--out dir]
+  migrate [path] [--write] [--json]
+  describe [path] [--json]
+  capabilities [path] [--json]
   assets missing [path] [--json]
   audio list [--kind music|sfx] [--prefix path] [--query q] [--limit N] [--json]
   sprites list [--prefix path] [--query q] [--limit N] [--json]
@@ -239,6 +257,7 @@ async function cmdNew(args: string[]): Promise<void> {
     "vn",
     "shmup",
     "fps2",
+    "arpg",
   ] as const;
   if (!(supported as readonly string[]).includes(genre)) {
     usageError(
@@ -255,6 +274,7 @@ async function cmdNew(args: string[]): Promise<void> {
     vn: "vn-starter",
     shmup: "shmup-starter",
     fps2: "fps2-starter",
+    arpg: "arpg-starter",
   };
   const templateName = genreTemplate[genre];
   if (templateName) {
@@ -270,6 +290,18 @@ async function cmdNew(args: string[]): Promise<void> {
       text = text.replace(/^id:.*$/m, `id: ${id}`);
       text = text.replace(/^title:.*$/m, `title: ${name}`);
       fs.writeFileSync(gy, text);
+      // Templates are schema v2 (T-M10-010); personalize the copied intent
+      // summary with the same boilerplate migrateProject emits.
+      const spec = path.join(base, "game.spec.yaml");
+      if (fs.existsSync(spec)) {
+        const intentText = fs
+          .readFileSync(spec, "utf8")
+          .replace(
+            /^summary:.*$/m,
+            `summary: ${name} is an Anvil game. Replace this migration summary with the intended player experience.`,
+          );
+        fs.writeFileSync(spec, intentText);
+      }
       console.log(base);
       return;
     }
@@ -307,6 +339,14 @@ schemaVersion: 1
       2,
     ),
   );
+  // T-M10-009: commit the fresh project as schema v2 by dogfooding the
+  // shipped migration — one source of truth for the baseline intent contract
+  // (game.spec.yaml) instead of a second scaffold-side copy.
+  const migration = migrateProject(base, { write: true });
+  if (!migration.ok) {
+    console.error(JSON.stringify({ ok: false, errors: migration.errors }, null, 2));
+    process.exit(1);
+  }
   console.log(base);
 }
 
@@ -320,17 +360,64 @@ function copyDir(src: string, dest: string): void {
   }
 }
 
+/**
+ * Authoring compile gate for the generic verification paths (T-M10-011).
+ *
+ * Schema-v2 projects must compile through `@anvil/authoring` before
+ * `validate`/`test`/`dev` treat them as healthy — this is what verifies the
+ * intent contract, declarative rules, and prefab graph generically. Schema-v1
+ * projects skip the compiler per the S-AUTHORING §2 version boundary (v1
+ * still validates and launches through core until the full cutover).
+ * Unreadable/missing manifests also skip: the core validator owns those
+ * diagnostics.
+ */
+function authoringCompileGate(root: string): {
+  errors: AnvilError[];
+  warnings: AnvilError[];
+} {
+  let version: unknown;
+  try {
+    const raw: unknown = yaml.parse(
+      fs.readFileSync(path.join(root, "game.yaml"), "utf8"),
+    );
+    if (typeof raw !== "object" || raw === null) return { errors: [], warnings: [] };
+    version = (raw as Record<string, unknown>)["schemaVersion"];
+  } catch {
+    return { errors: [], warnings: [] };
+  }
+  if (version === undefined || version === 1) return { errors: [], warnings: [] };
+  const result = compileProject(root);
+  if (!result.ok) return { errors: [...result.errors], warnings: [] };
+  return { errors: [], warnings: [...result.warnings] };
+}
+
 async function cmdValidate(args: string[]): Promise<void> {
   const root = projectRoot(args);
   const result = await validateProject(root);
+  const compile = authoringCompileGate(root);
+  const errors = [...(result.ok ? [] : result.errors), ...compile.errors];
+  const warnings = [
+    ...((result.ok ? result.warnings : undefined) ?? []),
+    ...compile.warnings,
+  ];
+  const combined: ValidationResult = errors.length
+    ? { ok: false, errors }
+    : warnings.length
+      ? { ok: true, warnings }
+      : { ok: true };
   if (hasFlag(args, "--json") || true) {
-    console.log(JSON.stringify(result, null, 2));
+    console.log(JSON.stringify(combined, null, 2));
   }
-  process.exit(result.ok ? 0 : 1);
+  process.exit(combined.ok ? 0 : 1);
 }
 
 async function cmdTest(args: string[]): Promise<void> {
   const root = projectRoot(args);
+  const compile = authoringCompileGate(root);
+  if (compile.errors.length) {
+    console.log(JSON.stringify({ ok: false, errors: compile.errors }, null, 2));
+    process.exit(1);
+  }
   const seed = getFlag(args, "--seed");
   const modules = await loadModulesForRoot(root);
   const report = await runTests(root, {
@@ -374,6 +461,11 @@ async function cmdDev(args: string[]): Promise<void> {
   const v = await validateProject(root);
   if (!v.ok) {
     console.error(JSON.stringify(v, null, 2));
+    process.exit(1);
+  }
+  const compile = authoringCompileGate(root);
+  if (compile.errors.length) {
+    console.error(JSON.stringify({ ok: false, errors: compile.errors }, null, 2));
     process.exit(1);
   }
 
@@ -686,6 +778,112 @@ function emitDataPackage(
       2,
     ),
   );
+}
+
+/** Preview/apply the schema v1 → v2 migration (S-CLI / T-M10-008). */
+function cmdMigrate(args: string[]): void {
+  const root = projectRoot(args);
+  const result = migrateProject(root, { write: hasFlag(args, "--write") });
+  if (hasFlag(args, "--json")) {
+    console.log(JSON.stringify(result, null, 2));
+    process.exit(result.ok ? 0 : 1);
+  }
+  if (!result.ok) {
+    console.error(JSON.stringify(result, null, 2));
+    process.exit(1);
+  }
+  if (!result.changed) {
+    console.log(`Already schema v${result.toVersion} — nothing to migrate (${result.root})`);
+  } else {
+    console.log(
+      `${result.written ? "Migrated" : "Migration preview"} ${result.root} ` +
+        `v${result.fromVersion} → v${result.toVersion}`,
+    );
+    for (const change of result.changes) {
+      console.log(`  ${change.action} ${change.path}`);
+    }
+    if (!result.written) console.log("Re-run with --write to apply.");
+  }
+  process.exit(0);
+}
+
+/** Compile and summarize manifest, intent, hash, content, capabilities (S-CLI / T-M10-008). */
+function cmdDescribe(args: string[]): void {
+  const root = projectRoot(args);
+  const result = compileProject(root);
+  if (!result.ok) {
+    console.log(JSON.stringify({ ok: false, root, errors: result.errors }, null, 2));
+    process.exit(1);
+  }
+  const ir = result.ir;
+  const payload = {
+    ok: true,
+    root,
+    anvilVersion: VERSION,
+    irVersion: ir.irVersion,
+    schemaVersion: ir.schemaVersion,
+    sourceHash: ir.sourceHash,
+    manifest: ir.manifest,
+    intent: {
+      summary: ir.intent.summary,
+      quality: ir.intent.quality,
+      players: ir.intent.players,
+      platforms: ir.intent.platforms,
+    },
+    counts: {
+      requirements: ir.intent.requirements.length,
+      capabilities: ir.capabilities.length,
+      traits: Object.keys(ir.traits).length,
+      prefabs: Object.keys(ir.prefabs).length,
+      triggers: Object.keys(ir.triggers).length,
+      machines: Object.keys(ir.machines).length,
+      content: Object.keys(ir.content).length,
+    },
+    capabilities: ir.capabilities.map((c) => ({
+      id: c.id,
+      version: c.version,
+      kind: c.kind,
+      summary: c.summary,
+    })),
+    content: Object.keys(ir.content),
+    warnings: result.warnings,
+  };
+  if (hasFlag(args, "--json")) {
+    console.log(JSON.stringify(payload, null, 2));
+    process.exit(0);
+  }
+  console.log(`${ir.manifest.id} — ${ir.manifest.title} (schema v${ir.schemaVersion})`);
+  console.log(`  root: ${root}`);
+  console.log(`  sourceHash: ${ir.sourceHash}`);
+  console.log(`  intent: ${ir.intent.summary}`);
+  console.log(
+    `  counts: requirements=${payload.counts.requirements} capabilities=${payload.counts.capabilities} ` +
+      `traits=${payload.counts.traits} prefabs=${payload.counts.prefabs} ` +
+      `triggers=${payload.counts.triggers} machines=${payload.counts.machines} ` +
+      `content=${payload.counts.content}`,
+  );
+  console.log(`  capabilities: ${ir.capabilities.map((c) => c.id).join(", ")}`);
+  process.exit(0);
+}
+
+/** Report the capability descriptors selected for a project (S-CLI / T-M10-008). */
+function cmdCapabilities(args: string[]): void {
+  const root = projectRoot(args);
+  const result = compileProject(root);
+  if (!result.ok) {
+    console.log(JSON.stringify({ ok: false, root, errors: result.errors }, null, 2));
+    process.exit(1);
+  }
+  const capabilities = result.ir.capabilities;
+  if (hasFlag(args, "--json")) {
+    console.log(JSON.stringify({ ok: true, root, capabilities }, null, 2));
+    process.exit(0);
+  }
+  console.log(`Capabilities for ${result.ir.manifest.id}: ${capabilities.length}`);
+  for (const c of capabilities) {
+    console.log(`  ${c.id}@${c.version} [${c.kind}] — ${c.summary}`);
+  }
+  process.exit(0);
 }
 
 function escapeHtml(s: string): string {
