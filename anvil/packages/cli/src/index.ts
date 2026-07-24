@@ -22,6 +22,7 @@ import {
 } from "@anvil/core";
 import { listRecipes, showRecipe } from "@anvil/recipes";
 import { loadModulesForRoot } from "./loadModules.js";
+import { runVisualEvidence } from "./visual-evidence.js";
 
 const VERSION = ANVIL_VERSION;
 
@@ -426,7 +427,14 @@ async function cmdTest(args: string[]): Promise<void> {
     modules,
   });
   console.log(JSON.stringify(report, null, 2));
-  process.exit(report.ok ? 0 : 1);
+  // Visual-Evidence Standard v0.1 — runs ONLY under --strict-assets (behind the
+  // flag; nothing here executes when the flag is off). Fails the run on any
+  // mechanical FAIL or NOT-ATTESTED sidecar.
+  let visualEvidenceOk = true;
+  if (hasFlag(args, "--strict-assets")) {
+    visualEvidenceOk = runVisualEvidence(root);
+  }
+  process.exit(report.ok && visualEvidenceOk ? 0 : 1);
 }
 
 async function cmdObserve(args: string[]): Promise<void> {
