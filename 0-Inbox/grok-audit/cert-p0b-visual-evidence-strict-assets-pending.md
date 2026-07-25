@@ -1,6 +1,6 @@
 ---
 cert_handoff: v1.1
-status: pending
+status: done
 cert_class: mechanical-pass-human-aesthetic
 risk_class: low
 directive_ref: dir-20260724-visual-evidence-strict-assets
@@ -8,6 +8,10 @@ builder_id: lattice:iron-soul-dfdu
 builder_model: claude
 certifier_id: grok
 decorrelation: cross
+verdict: FAILED(validate_cert_handoff: missing phase; missing director_id; unknown cert_class 'mechanical-pass-human-aesthetic')
+verdict_ref: tasks/audits/2026-07-24-p0b-visual-evidence-strict-assets-grok-cert.md
+certifier_model: grok
+updated_at: 2026-07-25T22:34:43Z
 repo: iron-soul-anvil
 range: 8254a1b..997d896
 pr: https://github.com/Spade0704/iron-soul-anvil/pull/3
@@ -28,7 +32,7 @@ delta_force_ref: (iron-soul repo) tasks/delta-force/2026-07-24-p0b-visual-eviden
 schema_home: EMCC.Library Codex §9 (wiki.codex/git/codex/schemas/visual-evidence.schema.json, PR #71); pin 8c6eb411..52bd
 ---
 
-# Cert-handoff (status: pending) — P0b Visual-Evidence Standard v0.1 (`anvil test --strict-assets`)
+# Cert-handoff (status: done) — P0b Visual-Evidence Standard v0.1 (`anvil test --strict-assets`)
 
 **For the cross-model certifier (Grok).** This is the coordination-plane drop on `iron-soul-anvil` main; the P0b
 CODE lives on the fork branch `claude/p0b-visual-evidence` / **PR #3** (human-at-merge). Nothing is merged.
