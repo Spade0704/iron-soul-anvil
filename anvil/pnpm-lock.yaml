@@ -32,9 +32,15 @@ importers:
 
   ../games/gravewake:
     dependencies:
+      '@anvil/authoring':
+        specifier: workspace:*
+        version: link:../../anvil/packages/authoring
       '@anvil/core':
         specifier: workspace:*
         version: link:../../anvil/packages/core
+      '@anvil/genre-arpg':
+        specifier: workspace:*
+        version: link:../../anvil/packages/genre-arpg
       '@anvil/genre-topdown2d':
         specifier: workspace:*
         version: link:../../anvil/packages/genre-topdown2d
@@ -85,6 +91,25 @@ importers:
   examples/hello-topdown: {}
 
   examples/hello-vn: {}
+
+  packages/authoring:
+    dependencies:
+      '@anvil/schema':
+        specifier: workspace:*
+        version: link:../schema
+      yaml:
+        specifier: ^2.6.1
+        version: 2.9.0
+    devDependencies:
+      '@types/node':
+        specifier: ^22.10.0
+        version: 22.20.1
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
+      vitest:
+        specifier: ^2.1.8
+        version: 2.1.9(@types/node@22.20.1)
 
   packages/cli:
     dependencies:
@@ -150,6 +175,25 @@ importers:
       electron:
         specifier: ^33.2.0
         version: 33.4.11
+
+  packages/genre-arpg:
+    dependencies:
+      '@anvil/core':
+        specifier: workspace:*
+        version: link:../core
+      '@anvil/genre-topdown2d':
+        specifier: workspace:*
+        version: link:../genre-topdown2d
+      '@anvil/schema':
+        specifier: workspace:*
+        version: link:../schema
+    devDependencies:
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
+      vitest:
+        specifier: ^2.1.8
+        version: 2.1.9(@types/node@22.20.1)
 
   packages/genre-card:
     dependencies:
