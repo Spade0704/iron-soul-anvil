@@ -20,36 +20,40 @@ vision: n/a
 - Range is single commit `6b53a3b` on
   `origin/claude/herald-marketing-publish-ru4szs` (not first-parent of current
   `main`; M10+M11 later landed on `main` via squash `8254a1b`). Certification is
-  of the **handoff-pinned range**, not of tip of main.
-- Pre-gate: `validate_poll_handoff.py` → **PASS**. `evidence_ref` present and
-  documents green `pnpm test` / `lint` / `check` plus CLI smoke and negative probe.
+  of the **handoff-pinned range**, not of tip of main. Gate commit tip of series
+  also has `e04262c` (Auditor CONCERNS-proceed + W1 doc fix + this handoff drop);
+  handoff `range` pins the feat commit only.
+- Pre-gate: `validate_poll_handoff.py` + `validate_cert_handoff.py` → **PASS**.
+- `evidence_ref` present and readable at
+  `docs/evidence/2026-07-22-anvil-tail-tests.txt` (pnpm test / lint / check exit 0,
+  CLI smoke, gate negative probe, gravewake validate after critMult).
 
 ## 2. Chat
 
 ### Scope (Stage 1)
 
-`git show 6b53a3b --stat` — 14 files, +890/−61:
+`git diff --name-only c23bbea..6b53a3b` — 14 files, +890/−61:
 
 | Path | Role |
 |------|------|
 | `anvil/packages/cli/src/index.ts` | `authoringCompileGate` on validate/test/dev (T-M10-011) |
-| `anvil/packages/cli/src/cli.integration.test.ts` | 4 new gate tests (positive, test-refusal, dev fail-fast, v1 skip) |
-| `anvil/package.json` | Root `pnpm test` adds `@anvil/authoring` + `@anvil/genre-arpg` |
+| `anvil/packages/cli/src/cli.integration.test.ts` | 4 new T-M10-011 integration tests |
+| `anvil/package.json` | root `pnpm test` adds `@anvil/authoring` + `@anvil/genre-arpg` |
 | `anvil/packages/core/src/validate.ts` | MODULE_UNKNOWN hint lists `genre-arpg` |
-| `anvil/pnpm-lock.yaml` | uWebSockets.js restored to tarball form (3 sites, pin `442087c0`) |
-| `games/gravewake/content/items/tyrant_edge.json` | `critMult` 0.35 → 1.35 |
-| Specs / design docs (20, 14, 18, S-*) | Acceptance / breakdown flips T-M10-011..013, T-M11-008/009 |
-| `docs/evidence/2026-07-22-anvil-tail-tests.txt` | Executes-clean evidence |
+| `anvil/pnpm-lock.yaml` | uWebSockets.js tarball restore (3 sites) |
+| `games/gravewake/content/items/tyrant_edge.json` | `critMult` 0.35→1.35 |
+| Specs / design (20, 14, 18, S-AUTHORING, S-ARPG, S-CLI, S-TEST) | acceptance / status flips |
+| `docs/evidence/2026-07-22-anvil-tail-tests.txt` | executes-clean evidence |
 
-No scope breach: CLI compile integration, root-suite wiring, title content fix for
-acceptance gate, audit-warning fixes, docs, evidence.
+Scope matches proposal (T-M10-011/012/013 + T-M11-008/009 + chunk-B audit warnings).
+No unrelated product churn.
 
 ### Mechanical floor (Stage 2)
 
 | Check | Result |
 |-------|--------|
 | `validate_poll_handoff.py` / cert-handoff schema | PASS |
-| `evidence_ref` (`docs/evidence/2026-07-22-anvil-tail-tests.txt`) | Present, readable, exit 0 for test/lint/check; negative probe exit 1 expected |
+| `evidence_ref` | Present, readable, documents full suite + gate probe |
 | Consumer `scripts/nonbuild_check.py` | Absent — skip |
 | Consumer `scripts/doc_drift_check.py` | Absent — skip |
 | Consumer `scripts/reconcile_backlog.py` | Absent — skip |
@@ -57,56 +61,70 @@ acceptance gate, audit-warning fixes, docs, evidence.
 
 **Independent cold checks (certifier):**
 
-- **Gate is new:** parent tree imported `compileProject` but only used it on
-  describe/capabilities paths; `cmdValidate` / `cmdTest` / `cmdDev` had no
-  `authoringCompileGate`. At range, all three generic paths call the gate.
-- **Positive-probe design is real:** integration test breaks only `game.spec.yaml`
-  (core never reads it); without the gate validate would still pass. Matches
-  auditor claim; own read of gate + test agrees.
-- **v1 boundary:** `version === undefined || version === 1` → skip compile
-  (S-AUTHORING §2). Dedicated test uses `legacyRoot`.
-- **Root suite:** `anvil/package.json` test filter includes both omitted packages;
-  CI inherits with zero workflow edits (doc claim matches package.json delta).
-- **critMult basis:** schema `critMult: z.number().min(1)`; Gravewake combat uses
-  `base * (isCrit ? stats.critMult : 1)` — multiplier form. `0.35` violates min(1)
-  and would *reduce* crit damage; `1.35` is the correct multiplier for a +35%
-  bonus. Disposition sound.
-- **Lockfile:** three uWebSockets.js sites restored to
-  `codeload…/tar.gz/442087c0…` (same pin as git form; matches prior good form
-  class). MODULE_UNKNOWN hint adds `genre-arpg` only.
+- **Gate is new:** parent `c23bbea` `cmdValidate`/`cmdTest`/`cmdDev` call
+  `validateProject` / `runTests` only; `compileProject` used only on
+  describe/capabilities paths. `6b53a3b` adds `authoringCompileGate` merging
+  compile errors into validate and failing test/dev fast on compile errors.
+  Schema-v1 / missing-manifest skip matches S-AUTHORING §2 boundary.
+- **Positive probe logic is real:** integration test breaks `game.spec.yaml` only;
+  core never reads intent, so without the gate validate would still pass.
+- **Root filter:** `package.json` test script includes both `@anvil/authoring` and
+  `@anvil/genre-arpg` (T-M10-012 / T-M11-008). Confirmed FILTER_OK on working tree
+  that carries the same wiring via squash.
+- **Acceptances:** breakdown rows T-M10-011/012/013 and T-M11-008/009 are **[x]**
+  at range; T-M11-009 notes gravewake critMult disposition.
+- **critMult basis:** schema `contentSchemas.ts` has `critMult: z.number().min(1)`;
+  runtime uses `base * critMult` with `Math.max(1, …)` clamps
+  (`stats.ts`, `itemization.ts`, Gravewake combat). `0.35` was bonus-fraction form
+  and fails min(1); `1.35` is multiplier-form. Sibling items / defaults use ≥1.
+- **Lockfile:** uWebSockets.js at pin `442087c0` is tarball form at all 3 sites;
+  byte-matches `2172841` resolution shape (Auditor/prior W1 reverse of git+ssh rewrite).
+- **Hint:** MODULE_UNKNOWN allowed list includes `genre-arpg`.
 
-**Evidence summary (Lattice run, 2026-07-21T19:49Z):**
+**Certifier-run porcelain (main WT equivalent wiring; CISO defers full rebuild):**
 
-- `pnpm test` exit 0 — authoring 9, genre-arpg 4, cli **13/13** (includes four
-  T-M10-011 cases).
-- `pnpm lint` exit 0.
-- Full `pnpm check` exit 0 including `validate:gravewake` after critMult fix.
-- CLI smoke: validate/test hello-card ok; bounded dev serves (exit 124 = timeout
-  while up); broken intent → validate exit 1 `INTENT_INVALID`.
+```text
+pnpm --filter @anvil/cli test
+  Test Files  1 passed (1)
+  Tests  13 passed (13)
+  incl. T-M10-011 validate compile gate / test refuse / dev fail-fast / v1 skip
+
+pnpm --filter @anvil/authoring --filter @anvil/genre-arpg test
+  authoring 9/9; genre-arpg 4/4
+
+node packages/cli/dist/index.js validate examples/hello-card --json → {"ok": true}
+```
+
+**Evidence summary (Lattice, 2026-07-21 on branch):**
+
+- Root `pnpm test` / `lint` / `check` all exit 0.
+- CLI smoke validate/test green; bounded `dev` serves (timeout 124 = still up).
+- Broken-intent validate exit 1 with `INTENT_INVALID` on `game.spec.yaml`.
+- Gravewake validate exit 0 after critMult fix.
 
 ### Proposal vs job (Stage 3)
 
-Job: T-M10-011/012/013 + T-M11-008/009 + chunk-B audit warnings (lockfile tarball
-restore + MODULE_UNKNOWN hint).
+Job: close M10+M11 tail — compile gate on generic paths, root-suite wiring,
+milestone acceptances, gravewake critMult disposition, lockfile+hint fixes.
 
 Delivered:
 
-- **T-M10-011:** validate/test/dev gate schema-v2 through `compileProject`; v1 skip.
+- **T-M10-011:** real CLI compile gate + 4 integration tests (positive + negatives + v1 skip).
 - **T-M10-012 / T-M11-008:** root test filter includes authoring + genre-arpg.
-- **T-M10-013 / T-M11-009:** acceptance rows **[x]**; `pnpm check` green via
-  critMult content fix + suite completeness.
-- **Warnings:** lockfile tarball restore; hint lists genre-arpg.
+- **T-M10-013 / T-M11-009:** docs/acceptance flips; `pnpm check` green in evidence
+  after critMult fix.
+- **Chunk-B warnings:** lockfile tarball restore + MODULE_UNKNOWN hint.
 
-No undercoverage against the stated job. M10 and M11 closed as claimed.
+No undercoverage against the stated job.
 
 ### Substance (Stage 4)
 
-- Compile gate is real CLI wiring + fail-combine with core validate, not a stub.
-- Four integration tests are structural (temp roots, status codes, path asserts),
-  not hollow.
-- Docs flip real status rows (breakdown, acceptance matrix, testing/CI narrative).
-- Auditor concerns-proceed + W1 doc-attribution fixed on top is consistent with
-  cold read; agreement cites own git/schema/combat evidence, not deferral.
+- Compile gate is production wiring in `index.ts`, not a stub or docs-only claim.
+- Tests encode the found-state probe (intent-only break) — gate necessity is demonstrated.
+- Docs are real status/count updates across breakdown + specs.
+- Auditor CONCERNS-proceed (W1 doc-18 attribution fixed on `e04262c`) is independently
+  consistent with this cold read; agreement cites own git + vitest porcelain, not
+  deferral to Auditor.
 
 **Chat token: PASS**
 
@@ -115,16 +133,15 @@ No undercoverage against the stated job. M10 and M11 closed as claimed.
 Handoff has no `execute_approved: true` and no CISO body approval for independent rebuild.
 Per interim CISO Execute gate: **deferred (CISO gate)**.
 
-Agreement with Lattice `evidence_ref` is not re-run as a full suite in this harness;
-Chat relies on committed evidence artifact + cold code/test/doc/git reads above
-(gate novelty vs parent, probe design, schema/runtime critMult basis, root filter,
-lockfile form).
+Targeted Chat-floor re-runs above (CLI 13/13 including all four T-M10-011 cases,
+authoring 9, genre-arpg 4, hello-card validate) agree with Lattice `evidence_ref`
+on the gate and suite wiring. Full monorepo `pnpm check` not re-executed in this harness.
 
 **Execute token: deferred (CISO gate)**
 
 ## 4. Vision
 
-Not a frontend/UI change set (CLI gate + package test wiring + title content + docs).
+Not a frontend/UI change set (CLI gate + package filter + content scalar + docs).
 No comp path. **n/a**.
 
 **Vision token: n/a**
