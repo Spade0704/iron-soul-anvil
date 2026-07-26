@@ -1,0 +1,7 @@
+{
+  "seed": 42,
+  "steps": 100,
+  "hash": "ss1:be646bd7",
+  "engineNote": "@anvil/core SeededRng mulberry32 + hashString FNV-1a; module ss1 serializer",
+  "updateProtocol": "pnpm sim:regen-golden + PR note of intentional sim change"
+}
