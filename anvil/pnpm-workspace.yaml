@@ -2,3 +2,4 @@ packages:
   - "packages/*"
   - "examples/*"
   - "../games/gravewake"
+  - "../games/iron-soul"

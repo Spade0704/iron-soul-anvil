@@ -1,0 +1,16 @@
+{
+  "note": "External reference fixtures for G0 audit (computed once from frozen algorithms)",
+  "mulberry32_seed42_first5": [
+    0.6011037519201636,
+    0.44829055899754167,
+    0.8524657934904099,
+    0.6697340414393693,
+    0.17481389874592423
+  ],
+  "fnv1a": {
+    "": "811c9dc5",
+    "a": "e40c292c",
+    "foobar": "bf9cf968"
+  },
+  "sim_seed42_steps100_hash": "ss1:be646bd7"
+}

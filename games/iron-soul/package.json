@@ -1,0 +1,19 @@
+{
+  "name": "@games/iron-soul",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Iron Soul — G0 greybox headless autobattler (module-owned sim)",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "sim:regen-golden": "node scripts/regen-golden.mjs"
+  },
+  "dependencies": {
+    "@anvil/core": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}
