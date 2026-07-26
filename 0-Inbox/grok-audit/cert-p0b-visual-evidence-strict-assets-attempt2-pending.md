@@ -10,10 +10,10 @@ original_build_directive: dir-20260724-visual-evidence-strict-assets (EMCC log)
 slug: 2026-07-24-p0b-visual-evidence-strict-assets
 attempt: 2
 supersedes: 0-Inbox/grok-audit/cert-p0b-visual-evidence-strict-assets-pending.md
-status: pending
+status: done
 phase: build
 created_at: 2026-07-26T03:45:00Z
-updated_at: 2026-07-26T03:45:00Z
+updated_at: 2026-07-26T03:36:39Z
 target_repo: D:/Projects/IronSoul-Anvil/iron-soul-anvil
 repo: iron-soul-anvil
 range: 8254a1b..997d896
@@ -22,6 +22,7 @@ pr_branch: claude/p0b-visual-evidence
 proposal: P0b Visual-Evidence Standard v0.1 - per-asset sidecar checker wired additively into anvil test --strict-assets
 cert_class: cross-model-certified
 certifier_model: grok
+builder_model: claude
 decorrelation: cross
 risk_class: low
 auditor_verdict: PASS
@@ -31,6 +32,8 @@ cert_handoff_doc: anvil/packages/cli/CERT-HANDOFF-p0b-visual-evidence-v0_1.md
 delta_force_ref: (iron-soul repo) tasks/delta-force/2026-07-24-p0b-visual-evidence-strict-assets.md
 schema_home: EMCC.Library Codex section 9 (wiki.codex/git/codex/schemas/visual-evidence.schema.json, PR 71); pin 8c6eb411..52bd
 prior_attempt_verdict_ref: tasks/audits/2026-07-24-p0b-visual-evidence-strict-assets-grok-cert.md
+verdict: PASS
+verdict_ref: tasks/audits/2026-07-24-p0b-visual-evidence-strict-assets-grok-cert.md
 ---
 
 # Cert-handoff (attempt 2, status: pending) - P0b Visual-Evidence Standard v0.1 (`anvil test --strict-assets`)
