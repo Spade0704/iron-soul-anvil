@@ -10,10 +10,12 @@ director_id: director:EMCC
 directive_ref: dir-20260726-anvil-g0-workorder
 slug: 2026-07-26-g0-greybox
 attempt: 1
-status: pending
+status: done
+verdict: PASS
+verdict_ref: tasks/audits/2026-07-26-g0-greybox-claude-cert.md
 phase: build
 created_at: 2026-07-26T11:15:00Z
-updated_at: 2026-07-26T11:15:00Z
+updated_at: 2026-07-26T12:52:00Z
 target_repo: D:/Projects/IronSoul-Anvil/iron-soul-anvil
 repo: iron-soul-anvil
 range: 4a0884b..c813feb
