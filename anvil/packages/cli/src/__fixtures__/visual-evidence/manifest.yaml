@@ -1,0 +1,4 @@
+# Fixture asset manifest — path-binding source corpus for the prove-pair.
+required: []
+optional:
+  - actors/gravewarden.png
