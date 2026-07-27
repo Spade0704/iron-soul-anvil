@@ -6,6 +6,10 @@
  * sixth schema commitment (RNG-4); renames are forbidden.
  *
  * Spec: wiki.project_iron_soul …/anvil-arena-autobattler-design.md §6.1.1
+ *
+ * Bounds: assertStreamsWithinCliff uses SeededRng.isStateExact() — not a
+ * per-draw counter. getState() is masked (>>> 0) and cannot recover n; the
+ * cliff IS loss of integer exactness on the unmasked accumulator.
  */
 import { SeededRng } from "@anvil/core";
 
@@ -28,45 +32,24 @@ export type StreamBag = Readonly<Record<StreamLabel, SeededRng>>;
 
 /**
  * mulberry32 canonicity cliff: floor(2^53 / 0x6d2b79f5).
- * Past this many draws per generator the unmasked accumulator stops being
- * exact and the generator silently stops matching reference mulberry32.
+ * Documentation + error text — not a comparison operand.
+ * Number.isSafeInteger(state) flips false at draw 4,917,759 (one past this);
+ * first masked-vs-unmasked divergence is at 4,917,760.
  * Headroom is UNCOMPUTED (pending §13); do not invent a multiple here.
  */
 export const MULBERRY32_CANONICITY_CLIFF = 4_917_758;
 
-const drawCounts = new WeakMap<SeededRng, { n: number }>();
-
-function track(inner: SeededRng): SeededRng {
-  const counter = { n: 0 };
-  const proxy = new Proxy(inner, {
-    get(target, prop, receiver) {
-      if (prop === "random") {
-        return () => {
-          counter.n += 1;
-          return target.random();
-        };
-      }
-      const val = Reflect.get(target, prop, receiver);
-      if (typeof val === "function") {
-        return (val as (...args: unknown[]) => unknown).bind(receiver);
-      }
-      return val;
-    },
-  }) as SeededRng;
-  drawCounts.set(proxy, counter);
-  return proxy;
-}
-
 /**
  * Build every named stream once from the run seed. Root never escapes.
  * Construction-order independent (stream is pure over rootSeed+label).
+ * Returns plain SeededRng instances — no Proxy, no per-draw counter.
  */
 export function createStreams(rootSeed: number): StreamBag {
   const root = new SeededRng(rootSeed >>> 0);
   const record = {} as Record<StreamLabel, SeededRng>;
   for (const label of STREAM_LABELS) {
     // Eager once-at-init (RNG-1). Never call .stream() in per-tick paths.
-    record[label] = track(root.stream(label));
+    record[label] = root.stream(label);
   }
   // Root dropped here — no field, no return, no export.
   const streams = Object.freeze(record) as StreamBag;
@@ -91,20 +74,17 @@ export function assertStreamKeys(streams: StreamBag): void {
   }
 }
 
-export function getStreamDrawCount(rng: SeededRng): number {
-  return drawCounts.get(rng)?.n ?? 0;
-}
-
 /**
- * One comparison per run (not per draw): no stream may exceed the canonicity cliff.
+ * One comparison per stream per run (not per draw): accumulator still exact.
+ * Uses isStateExact() — fails safe one draw before first real divergence.
  * Demonstrably fires — see streams.test.ts.
  */
 export function assertStreamsWithinCliff(streams: StreamBag): void {
   for (const label of STREAM_LABELS) {
-    const n = getStreamDrawCount(streams[label]);
-    if (n > MULBERRY32_CANONICITY_CLIFF) {
+    if (!streams[label].isStateExact()) {
       throw new Error(
-        `stream '${label}' exceeded mulberry32 canonicity cliff: ${n} draws > ${MULBERRY32_CANONICITY_CLIFF}`,
+        `stream '${label}' passed the mulberry32 canonicity cliff ` +
+          `(~${MULBERRY32_CANONICITY_CLIFF} draws): accumulator no longer exact`,
       );
     }
   }

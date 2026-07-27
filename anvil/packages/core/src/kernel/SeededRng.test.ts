@@ -125,6 +125,23 @@ describe("SeededRng", () => {
     const twin = new SeededRng(s);
     expect(seqFrom(twin, 16)).toEqual(cont);
   });
+
+  it("isStateExact is true below the canonicity cliff and false past it", () => {
+    const r = new SeededRng(1);
+    expect(r.isStateExact()).toBe(true);
+    for (let i = 0; i < 1000; i++) r.random();
+    expect(r.isStateExact()).toBe(true);
+    // floor(2^53 / 0x6d2b79f5) = 4_917_758; isSafeInteger flips at +1 draw.
+    const cliff = 4_917_758;
+    for (let i = 1000; i < cliff; i++) r.random();
+    expect(r.isStateExact()).toBe(true);
+    r.random(); // draw 4_917_759
+    expect(r.isStateExact()).toBe(false);
+    // Read-only — no setter surface.
+    expect(
+      Object.getOwnPropertyDescriptor(SeededRng.prototype, "isStateExact")?.set,
+    ).toBeUndefined();
+  }, 60_000);
 });
 
 function seqFrom(r: SeededRng, n: number): number[] {

@@ -8,7 +8,6 @@ export {
   createStreams,
   assertStreamKeys,
   assertStreamsWithinCliff,
-  getStreamDrawCount,
   streamStatePairs,
   canonicalizeStreamStates,
 } from "./streams.js";

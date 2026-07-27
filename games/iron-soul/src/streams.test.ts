@@ -15,7 +15,6 @@ import {
   assertStreamsWithinCliff,
   canonicalizeStreamStates,
   createStreams,
-  getStreamDrawCount,
   streamStatePairs,
   type StreamLabel,
 } from "./streams.js";
@@ -91,10 +90,10 @@ describe("createStreams (RNG-1a)", () => {
     const b = createStreams(99);
     a.sim.random();
     a.sim.random();
-    expect(getStreamDrawCount(a.sim)).toBe(2);
-    expect(getStreamDrawCount(b.sim)).toBe(0);
-    // b must still be at draw 0 sequence-wise
+    // a advanced; b still at draw 0 sequence-wise (independent instances)
     expect(draws(b.sim, 5)).toEqual(draws(new SeededRng(99).stream("sim"), 5));
+    // a is not at the same position as a fresh stream
+    expect(draws(a.sim, 5)).not.toEqual(draws(new SeededRng(99).stream("sim"), 5));
   });
 
   it("stream-state hash is order-independent (sorted label,state pairs)", () => {
@@ -116,10 +115,11 @@ describe("createStreams (RNG-1a)", () => {
   });
 });
 
-describe("draw-count bounds assertion", () => {
+describe("canonicity-cliff bounds assertion (isStateExact)", () => {
   it("passes under a normal short run", () => {
     const streams = createStreams(1);
     for (let i = 0; i < 1000; i++) streams.sim.random();
+    expect(streams.sim.isStateExact()).toBe(true);
     expect(() => assertStreamsWithinCliff(streams)).not.toThrow();
   });
 
@@ -127,16 +127,17 @@ describe("draw-count bounds assertion", () => {
     "demonstrably fires when a stream exceeds the canonicity cliff",
     () => {
       const streams = createStreams(1);
-      // Real draws through the module proxy until past the cliff — one comparison
-      // in assertStreamsWithinCliff must throw. ~5M mulberry steps; keep timeout high.
+      // Honest full-length run: real mulberry draws until past the cliff.
+      // isStateExact flips false at draw 4,917,759 (cliff doc value + 1).
+      // No Proxy — plain SeededRng ~3 ns/draw; ~15 ms for 4.92M draws.
       const need = MULBERRY32_CANONICITY_CLIFF + 1;
       for (let i = 0; i < need; i++) streams.sim.random();
-      expect(getStreamDrawCount(streams.sim)).toBeGreaterThan(MULBERRY32_CANONICITY_CLIFF);
+      expect(streams.sim.isStateExact()).toBe(false);
       expect(() => assertStreamsWithinCliff(streams)).toThrow(
-        /exceeded mulberry32 canonicity cliff/,
+        /passed the mulberry32 canonicity cliff/,
       );
     },
-    120_000,
+    60_000,
   );
 });
 

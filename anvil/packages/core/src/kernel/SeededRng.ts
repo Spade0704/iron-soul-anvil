@@ -70,6 +70,18 @@ export class SeededRng {
   }
 
   /**
+   * True while the mulberry32 accumulator is still an exact integer.
+   *
+   * `this.state` is an unmasked accumulating double. Past 2^53 the `+=` is
+   * no longer exact and the generator silently stops matching reference
+   * mulberry32 — so exactness IS canonicity. Read-only, emits no output, so
+   * the gravewake vector is untouched.
+   */
+  isStateExact(): boolean {
+    return Number.isSafeInteger(this.state);
+  }
+
+  /**
    * Pure function of rootSeed+name — call-order independent.
    * Does not advance this generator. Same name always yields the same child seed.
    */
