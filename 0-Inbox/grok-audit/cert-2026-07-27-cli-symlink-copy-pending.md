@@ -13,7 +13,9 @@ director_id: director:EMCC
 directive_ref: dir-20260727-anvil-cli-symlink-copy
 slug: 2026-07-27-cli-symlink-copy
 attempt: 1
-status: pending
+status: done
+verdict: PASS
+verdict_ref: tasks/audits/2026-07-27-cli-symlink-copy-claude-cert.md
 phase: build
 created_at: 2026-07-27T17:57:29Z
 updated_at: 2026-07-27T17:57:29Z
