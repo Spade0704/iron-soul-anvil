@@ -23,6 +23,7 @@ import {
 import { listRecipes, showRecipe } from "@anvil/recipes";
 import { loadModulesForRoot } from "./loadModules.js";
 import { runVisualEvidence } from "./visual-evidence.js";
+import { copyDir } from "./copyDir.js";
 
 const VERSION = ANVIL_VERSION;
 
@@ -349,16 +350,6 @@ schemaVersion: 1
     process.exit(1);
   }
   console.log(base);
-}
-
-function copyDir(src: string, dest: string): void {
-  fs.mkdirSync(dest, { recursive: true });
-  for (const ent of fs.readdirSync(src, { withFileTypes: true })) {
-    const s = path.join(src, ent.name);
-    const d = path.join(dest, ent.name);
-    if (ent.isDirectory()) copyDir(s, d);
-    else fs.copyFileSync(s, d);
-  }
 }
 
 /**
