@@ -1,8 +1,16 @@
 /**
- * G0 greybox headless autobattler — integer/milli-cell, id-order, PREP/COMBAT/RESOLVE.
- * Module-owned; engine only supplies SeededRng + hashString.
+ * Iron Soul arena autobattler — integer/milli-cell, id-order, PREP/COMBAT/RESOLVE.
+ * Module-owned; engine supplies SeededRng (stream/fork + getState) + hashString.
+ *
+ * ARENA-1: streams live on sim state via createStreams(rootSeed). Root never escapes.
+ * Labels sim/opponent adopted as shipped (golden ss1:be646bd7); do not rename.
  */
-import { SeededRng } from "@anvil/core";
+import type { SeededRng } from "@anvil/core";
+import {
+  assertStreamsWithinCliff,
+  createStreams,
+  type StreamBag,
+} from "./streams.js";
 
 export type Phase = "PREP" | "COMBAT" | "RESOLVE";
 
@@ -45,19 +53,33 @@ export interface AutobattlerSimOpts {
 export class AutobattlerSim {
   readonly seed: number;
   private readonly maxCombatTicks: number;
-  private readonly rng: SeededRng;
-  private readonly oppRng: SeededRng;
+  /** Per-sim frozen stream bag (RNG-1a). Not module-global. */
+  private readonly streams: StreamBag;
   private tick = 0;
   private phase: Phase = "PREP";
   private units: Unit[] = [];
   private winner: number | null = null;
   private combatTicks = 0;
+  private cliffChecked = false;
 
   constructor(opts: AutobattlerSimOpts) {
     this.seed = opts.seed >>> 0;
     this.maxCombatTicks = opts.maxCombatTicks ?? 200;
-    this.rng = new SeededRng(this.seed).stream("sim");
-    this.oppRng = new SeededRng(this.seed).stream("opponent");
+    // createStreams keeps the root private; only named streams are retained.
+    this.streams = createStreams(this.seed);
+  }
+
+  /** Test/inspect: the frozen stream record stored on this sim instance. */
+  getStreams(): StreamBag {
+    return this.streams;
+  }
+
+  private get rng(): SeededRng {
+    return this.streams.sim;
+  }
+
+  private get oppRng(): SeededRng {
+    return this.streams.opponent;
   }
 
   /** PREP: place two units per side on integer grid. */
@@ -84,7 +106,7 @@ export class AutobattlerSim {
       cd: 1,
       alive: true,
     });
-    // Opponent team 1 — uses forked opponent stream only
+    // Opponent team 1 — uses opponent stream only
     this.units.push({
       id: 10,
       team: 1,
@@ -146,12 +168,14 @@ export class AutobattlerSim {
       else this.winner = alive0 === alive1 ? (alive0 ? null : null) : alive0 ? 0 : 1;
       // draw if both or neither
       if (alive0 === alive1) this.winner = null;
+      this.checkCliffOnce();
     }
   }
 
-  /** Run N combat-oriented steps (auto-prep on first). */
+  /** Run N combat-oriented steps (auto-prep on first). Bounds check once per run. */
   run(steps: number): void {
     for (let i = 0; i < steps; i++) this.step();
+    this.checkCliffOnce();
   }
 
   /**
@@ -168,6 +192,9 @@ export class AutobattlerSim {
 
   snapshot(): SimSnapshot {
     // Exclude any engine dt accumulator — tick is the only time index.
+    // RNG position is intentionally omitted from this snapshot so golden
+    // ss1:be646bd7 stays stable; stream-state hashing is a separate surface
+    // (canonicalizeStreamStates) for the command-layer determinism contract.
     const units = [...this.units]
       .sort((a, b) => a.id - b.id)
       .map((u) => ({
@@ -187,6 +214,13 @@ export class AutobattlerSim {
       units,
       winner: this.winner,
     };
+  }
+
+  /** One comparison per run — not per draw. */
+  private checkCliffOnce(): void {
+    if (this.cliffChecked) return;
+    this.cliffChecked = true;
+    assertStreamsWithinCliff(this.streams);
   }
 
   private acquire(attacker: Unit): Unit | null {

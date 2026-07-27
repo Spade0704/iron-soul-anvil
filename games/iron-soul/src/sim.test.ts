@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { AutobattlerSim } from "./sim.js";
 import { hashSimState } from "./hash.js";
+import { STREAM_LABELS } from "./streams.js";
 import { SeededRng, hashString } from "@anvil/core";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -90,6 +91,11 @@ describe("AutobattlerSim G0 greybox", () => {
 
     const h = hashSimState(runSim(42, 100).snapshot());
     expect(h).toBe(vectors.sim_seed42_steps100_hash);
+  });
+
+  it("ARENA-1: streams live on sim state; keys === STREAM_LABELS", () => {
+    const sim = new AutobattlerSim({ seed: 42 });
+    expect(Object.keys(sim.getStreams())).toEqual([...STREAM_LABELS]);
   });
 });
 

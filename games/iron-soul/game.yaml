@@ -1,0 +1,11 @@
+id: iron-soul
+title: Iron Soul Arena
+version: 0.0.0
+genre: none
+modules: []
+entryScene: main
+seed: 1
+contentRoot: content
+assetsRoot: assets
+schemaVersion: 2
+intent: game.spec.yaml

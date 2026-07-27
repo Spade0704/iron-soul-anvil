@@ -91,6 +91,57 @@ describe("SeededRng", () => {
     // Expect high uniqueness of first draws (collision rate << naive birthday on 10k)
     expect(starts.size).toBeGreaterThan(9_900);
   });
+
+  it("getState returns state >>> 0 and is read-only (no setter)", () => {
+    const r = new SeededRng(42);
+    expect(typeof r.getState()).toBe("number");
+    expect(r.getState()).toBe(r.getState() >>> 0);
+    // No restore/setter surface on the public API.
+    expect("setState" in r).toBe(false);
+    expect(
+      Object.getOwnPropertyDescriptor(SeededRng.prototype, "getState")?.set,
+    ).toBeUndefined();
+  });
+
+  /**
+   * STATE canary: representation-preserving output changes that alter
+   * `state mod 2^32` must trip here (stored hashes depend on getState).
+   * Seed 42, 100 draws — constant recorded against mulberry32 as of ARENA-1.
+   */
+  it("getState canary: seed 42 after 100 draws is stable", () => {
+    const r = new SeededRng(42);
+    for (let i = 0; i < 100; i++) r.random();
+    // Fixed-width u32; update only with a conscious stored-hash migration.
+    expect(r.getState()).toBe(((0x6d2b79f5 * 100 + 42) >>> 0));
+  });
+
+  it("getState twin: reseeding to state>>>0 matches continuation while state < 2^32", () => {
+    // One draw from seed 1: state = 1 + 0x6d2b79f5 = 0x6d2b79f6 (< 2^32).
+    const short = new SeededRng(1);
+    short.random();
+    const s = short.getState();
+    expect(s).toBe(0x6d2b79f6);
+    const cont = seqFrom(short, 16);
+    const twin = new SeededRng(s);
+    expect(seqFrom(twin, 16)).toEqual(cont);
+  });
+
+  it("isStateExact is true below the canonicity cliff and false past it", () => {
+    const r = new SeededRng(1);
+    expect(r.isStateExact()).toBe(true);
+    for (let i = 0; i < 1000; i++) r.random();
+    expect(r.isStateExact()).toBe(true);
+    // floor(2^53 / 0x6d2b79f5) = 4_917_758; isSafeInteger flips at +1 draw.
+    const cliff = 4_917_758;
+    for (let i = 1000; i < cliff; i++) r.random();
+    expect(r.isStateExact()).toBe(true);
+    r.random(); // draw 4_917_759
+    expect(r.isStateExact()).toBe(false);
+    // Read-only — no setter surface.
+    expect(
+      Object.getOwnPropertyDescriptor(SeededRng.prototype, "isStateExact")?.set,
+    ).toBeUndefined();
+  }, 60_000);
 });
 
 function seqFrom(r: SeededRng, n: number): number[] {
