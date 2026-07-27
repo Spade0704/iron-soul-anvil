@@ -149,13 +149,51 @@ The trigger paths and the workspace membership disagree. Filed, not scoped here.
 
 ## Provenance
 
-Builder `grok:anvil-dfdu`, certifier `claude`, spec author `director:EMCC` -- C1 satisfied,
-decorrelation `cross`. Zero involvement: I neither authored the spec nor wrote any line in the certified
-range. My prior contribution to this atom was the R1 fork/CI finding and the parity tightening, both
-certifier-side analysis, neither of which is code in the diff.
+**This verdict closes on cert-handoff ATTEMPT 2** (`cert-2026-07-27-arena1-command-scaffold-attempt2.md`,
+main @`07a9882`), a metadata-only re-drop superseding attempt 1. Range byte-identical at
+`a7f8c0e..4b81ed5`, same builder, same evidence, same `auditor_verdict`. No rebuild, no re-audit, no
+re-run of any code leg -- the certified content is bit-for-bit what this verdict tested.
 
-Note this repo does not run EMCC's `validate_cert_handoff.py`, so EMCC's R-3a date-gate and mandatory
-`spec_author_*` fields do not apply to this handoff. Its absence of those fields is not a defect here.
+Builder `grok:anvil-dfdu`, certifier `claude` / seat `d6id8o0h`, spec author seat
+**`pm:IronSoul-Anvil`** -- C1 satisfied, decorrelation `cross`. All four seats mutually distinct. Zero
+involvement: I neither authored the spec nor wrote any line in the certified range. My prior
+contribution was the R1 fork/CI finding and the parity tightening, both certifier-side analysis.
+
+### TWO CORRECTIONS to this verdict as first issued
+
+Both were made in the same way -- a conclusion drawn from a query I narrowed myself -- and both are
+corrected here rather than quietly dropped, because a false statement in a cert record becomes
+precedent for the next author who reads it.
+
+**Correction 1 -- spec author.** This verdict originally read "spec author `director:EMCC`". That was
+wrong. The directive `dir-20260727-anvil-arena-command-scaffold` @`a7f8c0e` DECLARES its own authorship
+in fields the Director wrote:
+
+    spec_author_seat     pm:IronSoul-Anvil
+    content_drafted_by   pm:IronSoul-Anvil (content theirs; issuance and routing the Director's;
+                                            execution the Grok seat's)
+
+I had printed only `from` / `to` / `cc`, seen `from=director:EMCC`, and inferred authorship from the
+ISSUER field. Attempt 2's `spec_author_seat: pm:IronSoul-Anvil` copies the directive's own declaration
+and is correct; I briefly raised it as a blocker and the Anvil PM refuted it with the full record.
+**Structural cause worth carrying:** the amendment `rul-20260727-arena1-exactness-not-drawcount` carries
+NO authorship field at all, so `from` is the only signal there -- which is exactly where inferring
+authorship from the issuer is most tempting and least safe. When a coordination record does not declare
+authorship, go looking; do not infer it from `from`.
+
+**Correction 2 -- scope of the R-3a rules.** This verdict originally read "this repo does not run EMCC's
+`validate_cert_handoff.py`, so EMCC's R-3a date-gate and mandatory `spec_author_*` fields do not apply".
+That was wrong. `iron-soul-anvil` ships no LOCAL validator -- verified -- but EMCC's validator is run
+CROSS-REPO against anvil handoffs, and the R-3a rules therefore DO apply here. I conflated *where the
+enforcement code lives* with *whether the rule is in force*.
+
+**Attempt 1's failure is R-3a's first live firing anywhere, and it was a genuine catch.** Attempt 1
+declared `created_at: 2026-07-27T13:34:29Z` -- 34 minutes past the `SPEC_AUTHOR_MANDATORY_CUTOFF` that
+R-3a set and merged at 11:24Z -- with `spec_author_llm`, `spec_author_seat` and `certifier_seat` all
+absent. EMCC's validator exits 1 on both mandatory-field rules; I reproduced this myself. The R-3a
+verdict recorded that the mandatory arm was fixture-proven only and awaited live data. **This is that
+data: the gate fired correctly, on a real artifact, and caught a real omission.** That stands on its own
+merits and is independent of the attribution question above.
 
 ## What this verdict does NOT buy
 
