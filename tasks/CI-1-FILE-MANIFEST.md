@@ -1,4 +1,4 @@
-# CI-1 file manifest (Surgeon fence) — PRE-COMMITTED before build
+# CI-1 file manifest (Surgeon fence) â€” PRE-COMMITTED before build
 
 Binding: `dir-20260727-anvil-ci-trigger-parity-and-dispatch`.
 Per `rul-20260727-anvil-manifest-precommit`: this file is committed **before** the
@@ -11,7 +11,7 @@ diff it describes. It is a prediction the build can contradict.
 ### Required edits (and only these)
 
 1. Add `games/**` to the `paths` list on **both** `push` and `pull_request`.
-   Use `games/**` — not `games/iron-soul/**` (gravewake shares the blind spot).
+   Use `games/**` â€” not `games/iron-soul/**` (gravewake shares the blind spot).
 2. Add `workflow_dispatch:` under `on:` so the workflow can be smoke-tested
    without a code push.
 
@@ -38,3 +38,12 @@ B. A games/**-only commit demonstrably triggers a run
 C. Read the run log: steps executed; `pnpm test` covers game packages
 D. Establish whether F4 (gravewake file:// doubled drive letter) exists on Linux
 E. First-run failures fixed honestly inside fence, or STOP AND REPORT
+
+## Fence amendment (rul-20260727-ci1-fence-widened-symlink-retarget)
+
+In addition to .github/workflows/ci.yml, exactly **one** more blob is in fence:
+
+- nvil/examples/hello-empty/assets/audio retargeted to `../../../assets/audio`
+
+Not nvil/examples/**. Not the CLI. Leg D (F4 on Linux) stays a **named residual**
+until steps 12/13 actually execute and F4 is observed — do not close claiming F4 checked.
