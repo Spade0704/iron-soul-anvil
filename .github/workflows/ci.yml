@@ -1,13 +1,16 @@
 name: ci
 
 on:
+  workflow_dispatch:
   push:
     paths:
       - "anvil/**"
+      - "games/**"
       - ".github/workflows/ci.yml"
   pull_request:
     paths:
       - "anvil/**"
+      - "games/**"
       - ".github/workflows/ci.yml"
 
 defaults:
