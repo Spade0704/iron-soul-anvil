@@ -59,6 +59,17 @@ export class SeededRng {
   }
 
   /**
+   * Read-only view of the mulberry32 accumulator, masked to u32.
+   *
+   * `this.state` is an unmasked accumulating JS double (not a u32). Only the
+   * low 32 bits reach the output path, so the accessor MUST apply `>>> 0`.
+   * No setter / restore — mid-run resume is a separate decision.
+   */
+  getState(): number {
+    return this.state >>> 0;
+  }
+
+  /**
    * Pure function of rootSeed+name — call-order independent.
    * Does not advance this generator. Same name always yields the same child seed.
    */

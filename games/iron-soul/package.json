@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Iron Soul — G0 greybox headless autobattler (module-owned sim)",
+  "description": "Iron Soul Arena — commanded autobattler module (genre none + purpose-built; ARENA-1 streams/determinism)",
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "vitest run",
