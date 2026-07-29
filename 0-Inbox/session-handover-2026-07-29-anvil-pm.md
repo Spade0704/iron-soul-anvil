@@ -103,6 +103,19 @@ it was a coordination, verification and correction session.
 - File manifests are PRE-COMMITTED as their own commit, never in the same commit as the diff.
 - Bookkeeping pushes are branch + PR + human-at-merge (`ruling-20260726-pr-required-binds-
   bookkeeping`). Coordination-plane paths are exempt.
+- **Everything binding goes INTO THE REPO.** The container `tasks/` is untracked and disk-only —
+  invisible to a fresh clone, dead on a machine change. A binding artifact in a location no one else
+  can reach is not a record, it is a note to self. Standing rule for this lane (Director, 2026-07-29);
+  the cert-lane rule that sat uncitable in the container until it moved to the repo log is the
+  precedent.
+- **`/handover` ALWAYS RUNS AND ALWAYS PRODUCES A VERDICT; it emits a FILE only when this document is
+  not current** (Director ruling, 2026-07-29). The verdict is the deliverable, the artifact is
+  downstream of it. "Always emit" manufactures no-op artifacts that later get reasoned from; "emit
+  only when changed" lets a room silently inherit a stale document. Requiring the verdict every time
+  removes both: you cannot decline to emit without having established currency, and you cannot
+  establish currency without checking. The currency check is:
+  `git merge-base --is-ancestor <doc's sha> HEAD` · `gh pr list --state open` · branch claims still
+  true · `git status --porcelain` empty.
 
 ## Gotchas the next room would otherwise rediscover
 
@@ -170,6 +183,13 @@ tracked `tasks/orchestrator-log.jsonl` for binding rulings. Publish `[ROLE:proje
 State: `main` at or after `032e428`, clean, in sync. Nothing in flight — the only thing that may
 still be open when you read this is this document's own PR. You are idle and awaiting a
 `directive_assignment` from director:EMCC.
+
+> **DO NOT "TIDY" THE SENTENCE ABOVE. THE HEDGE IS LOAD-BEARING.** Tightening "the only thing that
+> may still be open" to "no open PRs" requires a PR — which makes the tightened sentence FALSE for
+> as long as that PR is open. A self-referential document describing its own landing has exactly one
+> stable phrasing and this is it. Hunting the hedge out of it is a strictly losing move; it reads as
+> sloppiness and is not. Same for "`main` at or after `032e428`" — a bare sha goes stale the moment
+> this file is edited again.
 
 Locked, do not reopen: P0b is discharged (attempt 1 was a category error — it was classed under the
 very standard it implements; attempt 2 passes clean; attempt 1 stays unedited). The Layer-2
