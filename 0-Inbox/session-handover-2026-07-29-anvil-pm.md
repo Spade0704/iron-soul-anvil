@@ -1,9 +1,9 @@
 # Session handover — iron-soul-anvil PM seat — 2026-07-29
 
 Seat: `[ROLE:project-manager][REPO:iron-soul-anvil]` per EMCC `framework/09` §4.2.
-Covers 2026-07-28 through 2026-07-29 EOD. Repo state at write time: `main` @ **`00e6dda`**, clean,
-in sync with `origin/main`. Zero atoms built this session — it was a coordination, verification and
-correction session.
+Covers 2026-07-28 through 2026-07-29 EOD. Repo state: `main` at or after **`032e428`** (the merge of
+this document's first revision), clean, in sync with `origin/main`. Zero atoms built this session —
+it was a coordination, verification and correction session.
 
 ## Read first
 
@@ -64,9 +64,11 @@ correction session.
 2. **`.gitattributes` atom** — filed, prioritised, routing HELD one Operator beat (Operator focus is
    CRW). Intended as the first routing to `slp4frjk` under the worktree convention. Three lines,
    declarative, no test surface.
-3. **`claude/iron-soul-scaffold` deletion — OPERATOR'S WORD ONLY.** Keep-reason is discharged;
-   content check (`comm -13` over `git ls-tree` vs main) shows 9 branch-unique files, all
-   `.gitkeep`. Director concurs it is safe and will surface it. This seat does not touch it.
+3. ~~`claude/iron-soul-scaffold` deletion~~ **DONE 2026-07-29** — Operator-authorised, deleted local
+   and remote, recovery sha `6cacd02e9563878126ca6229589ba4b63755a9f5` recorded BEFORE the delete
+   (reachable until gc). **Convention going forward, Director's standing request: record the tip sha
+   before every branch-delete in this repo** — reversible-for-now is a different risk class from
+   irreversible, and that one line is the whole difference.
 4. **Held on blocking entry conditions, DO NOT START:** the copyDir depth-cap (cycle guard) and the
    manifest-driven-copy atom.
 5. **Expected, pre-recorded, NOT a defect:** EMCC.Library will ship `$id` + `version` into the
@@ -78,8 +80,16 @@ correction session.
 ## How to operate
 
 - **`git fetch` before ANY `origin/..` comparison.** `origin/main` is a local cache, not the remote.
+  `git branch -r` is the same cache — a deleted remote branch keeps showing until `--prune`.
 - **Judge supersession by TREE.** Ancestry lies, branch names lie, and after a squash the sha lies
   too. `git rev-parse <sha>^{tree}` settles it in one command.
+- **MATCH THE INSTRUMENT TO THE GRANULARITY OF THE CLAIM.** "Nothing unique on this branch" is a
+  CONTENT claim; `comm -13` over `git ls-tree` answers a PATH question and is blind by construction
+  to a file present on both sides with different content. For any branch-delete: diff from the
+  merge-base, then compare blob OIDs per path. Same rule as judge-by-tree, one granularity down.
+- **A phrase grep can fail because the sentence WRAPS.** Flatten before concluding a clause is
+  missing: `git show <ref>:<path> | tr '\n' ' ' | tr -s ' '`. Line-oriented instruments fail
+  line-shaped.
 - **When the claim is about what an artifact SAYS, open the artifact.** `git log -1 --format=%B
   <sha>` before asserting what a commit contains.
 - **Publish the command with the claim** — a conclusion alone can only be agreed with; a conclusion
@@ -157,8 +167,9 @@ untracked container board at `D:\Projects\IronSoul-Anvil\tasks\todo.md` and `ses
 tracked `tasks/orchestrator-log.jsonl` for binding rulings. Publish `[ROLE:project-manager]
 [REPO:iron-soul-anvil]` via `set_summary`.
 
-State: `main` @ `00e6dda`, clean, in sync. No open PRs. Nothing in flight. You are idle and awaiting
-a `directive_assignment` from director:EMCC.
+State: `main` at or after `032e428`, clean, in sync. Nothing in flight — the only thing that may
+still be open when you read this is this document's own PR. You are idle and awaiting a
+`directive_assignment` from director:EMCC.
 
 Locked, do not reopen: P0b is discharged (attempt 1 was a category error — it was classed under the
 very standard it implements; attempt 2 passes clean; attempt 1 stays unedited). The Layer-2
@@ -169,8 +180,8 @@ per-atom worktree, never turn-taking. `-text` over `eol=lf` for byte-pinned file
 
 Next, in order: replaytape-v2 assignment is the DIRECTOR'S to make — it is `directive_draft` on
 purpose, do not self-start. The `.gitattributes` atom is filed and prioritised, routing held behind
-CRW. `claude/iron-soul-scaffold` is safe to delete but is the OPERATOR'S word — do not touch it. The
-depth-cap and manifest-driven-copy atoms are held on blocking entry conditions.
+CRW. `claude/iron-soul-scaffold` is DELETED (2026-07-29, recovery sha `6cacd02`). The depth-cap and
+manifest-driven-copy atoms are held on blocking entry conditions.
 
 Operate like this: `git fetch` before any `origin/..` comparison; judge supersession by TREE
 (`git rev-parse <sha>^{tree}`) because ancestry, names and post-squash shas all lie; when the claim
