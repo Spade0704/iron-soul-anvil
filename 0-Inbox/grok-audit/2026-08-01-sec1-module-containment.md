@@ -29,7 +29,7 @@ spec_author_seat: grok:EMCC-Director
 cert_class: parked-awaiting-cross-model
 decorrelation: cross
 wake_build: false
-caveat: "parked-awaiting-cross-model is NOT cross-model certified. Regime-B AUDITOR_PASS. External cert Claude (builder_llm=grok). CISO unlock Operator 2026-08-01; DF PROCEED-WITH-CHANGES. Note: directive_assignment currently lives on EMCC log — may need Anvil log mirror for validate_cert_handoff cwd=Anvil (B-DIR-01)."
+caveat: "parked-awaiting-cross-model is NOT cross-model certified. Regime-B AUDITOR_PASS. External cert Claude (builder_llm=grok). CISO unlock Operator 2026-08-01; DF PROCEED-WITH-CHANGES. Note: directive_assignment mirrored to Anvil log (B-DIR-01 fixed) — B-DIR-01: directive mirrored to Anvil tasks/orchestrator-log.jsonl for validate_cert_handoff cwd=Anvil."
 ---
 
 # CERT_REQ - SEC-1 module-containment Layer 2 (WAVE-B)
