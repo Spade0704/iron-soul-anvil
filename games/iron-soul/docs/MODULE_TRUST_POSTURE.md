@@ -27,15 +27,20 @@ import. The real malice control is the pipeline + human review below.
 - Dependencies pinned; no unpinned/floating installs feed a module.
 - Nothing runs `pnpm play` on an unreviewed working tree.
 
-## Layer 2 — engine containment guard (FIRST GATED BUILD, toolchain day)
+## Layer 2 — engine containment guard (IMPLEMENTED — SEC-1 / WAVE-B)
 
-A named helper `resolveContainedModule(root, id)` replaces the raw resolve at the loader:
-form-validate the ID (Layer-1 regex) → `realpath(root)` + `realpath(resolved)` → reject if
-`path.relative(root, abs)` starts with `..` or is absolute → throw a named `ModuleContainmentError`
-(carrying id/abs/root) and log the trip. The guard completes BEFORE the import expression.
-Built by a Lattice peer under the framework/22 gate; shipped as an **upstream PR** to
-7etsuo/anvil (generic hardening = contribution, not a private fork divergence) + a CI drift check
-keeping `anvil/` exactly one commit off upstream.
+**Status:** IN FORCE in loader (2026-08-01 SEC-1 dual-PASS path). Symbols:
+
+- `ModuleContainmentError` — `anvil/packages/cli/src/loadModules.ts`
+- `resolveContainedModule(root, id)` — same file
+- Wire: relative module branch (`./` / `../`) calls the guard **before** `import()`
+- Tests: `anvil/packages/cli/src/loadModules.containment.test.ts`
+
+Helper: form-reject absolute/drive/UNC/NUL → `realpath(root)` + resolve id → `realpath` when
+present → reject if `path.relative(root, abs)` starts with `..` or is absolute → throw
+`ModuleContainmentError` (id/abs/root). Guard completes BEFORE the import expression.
+
+Upstream contribution to 7etsuo/anvil remains a follow-up (generic hardening).
 
 ## Layer 3 — sandbox realm (DEFERRED)
 
