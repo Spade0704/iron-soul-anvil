@@ -10,12 +10,14 @@ director_id: grok:EMCC-Director
 directive_ref: tasks/orchestrator-log.jsonl#dir-20260801-wave-b-sec1
 slug: 2026-08-01-sec1-module-containment
 attempt: 1
-status: pending
+status: done
+verdict: PASS
+verdict_ref: tasks/audits/2026-08-01-sec1-module-containment-lattice-certifier.md
 phase: build
 created_at: 2026-08-01T14:00:00Z
 updated_at: 2026-08-01T18:00:00Z
 target_repo: D:/Projects/IronSoul-Anvil/iron-soul-anvil
-range: 8a3b7dc..86d198f
+range: 8a3b7dc..8d292be
 branch: claude/sec1-module-containment
 pr: 14
 proposal: SEC-1 WAVE-B module-containment Layer 2 - resolveContainedModule before import
@@ -26,10 +28,10 @@ auditor_ref: tasks/audits/2026-08-01-sec1-module-containment-auditor.md
 evidence_ref: tasks/audits/2026-08-01-sec1-module-containment-evidence.md
 spec_author_llm: grok
 spec_author_seat: grok:EMCC-Director
-cert_class: parked-awaiting-cross-model
+cert_class: cross-model-certified
 decorrelation: cross
 wake_build: false
-caveat: "parked-awaiting-cross-model is NOT cross-model certified. Regime-B AUDITOR_PASS. External cert Claude (builder_llm=grok). CISO unlock Operator 2026-08-01; DF PROCEED-WITH-CHANGES. Note: directive_assignment mirrored to Anvil log (B-DIR-01 fixed) — B-DIR-01: directive mirrored to Anvil tasks/orchestrator-log.jsonl for validate_cert_handoff cwd=Anvil."
+caveat: "cross-model-certified after Claude CERT_PASS + Director dual-PASS close-20260801-sec1-dual-pass. Product 86d198f; PR #14 human merge. C1: session note vs declared Lattice seat same vendor; CF3 holds."
 ---
 
 # CERT_REQ - SEC-1 module-containment Layer 2 (WAVE-B)
@@ -77,9 +79,17 @@ cd anvil/packages/cli && pnpm test && pnpm run build
 | Build | DONE product `86d198f` |
 | Regime-B Auditor | **AUDITOR_PASS** |
 | External CERT | **pending this handoff** |
-| Director dual-PASS | not yet |
+| Director dual-PASS | **DUAL_PASS** close-20260801-sec1-dual-pass |
 | Human merge | **Anvil #14 only** after dual-PASS |
 
 ## Range (C1)
 
 Product `86d198f` ancestor of tip; re-resolve if docs tip advances (`e4e844b` handoff commit).
+
+## Director dual-PASS
+
+- **Close:** `close-20260801-sec1-dual-pass`
+- **Artifact:** `tasks/audits/2026-08-01-sec1-module-containment-dual-pass-close.md`
+- **Wave:** WAVE-B
+- **Human:** merge Anvil PR **#14** only
+- **Next wave:** WAVE-E (A->B->E->F->C->D->G)
